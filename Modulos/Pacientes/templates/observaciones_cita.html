@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+{% block title %} Observaciones de la Cita {% endblock %}
+{% block body %}
+<div class="container mt-5">
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h4 class="mb-0"><i class="bi bi-journal-text me-2"></i> Observaciones de la Cita</h4>
+        </div>
+        <div class="card-body">
+            <div class="mb-4">
+                <p><strong>Estudiante:</strong> {{ cita.id_estudiante.nombres }} {{ cita.id_estudiante.apellidos }}</p>
+                <p><strong>Fecha de la cita:</strong> {{ cita.fecha }}</p>
+                <p><strong>Motivo:</strong> {{ cita.motivo }}</p>
+            </div>
+
+            <!-- Formulario para nueva observación -->
+            <form method="POST" class="needs-validation" novalidate>
+                {% csrf_token %}
+                <input type="hidden" name="obs_id" id="obs_id">
+                <div class="mb-3">
+                    <label for="observacion" class="form-label"><strong>Escribe o edita una observación</strong></label>
+                    <textarea name="observacion" id="observacion" class="form-control" rows="5" required></textarea>
+                    <div class="invalid-feedback">
+                        Por favor escribe una observación.
+                    </div>
+                </div>
+                <div class="d-flex justify-content-between">
+                    <a href="{% url 'gestionCitas' %}" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left"></i> Volver
+                    </a>
+                    <button type="submit" class="btn btn-success">
+                        <i class="bi bi-save"></i> Guardar Observación
+                    </button>
+                </div>
+            </form>
+
+            <hr class="my-4">
+
+         <!-- Historial de observaciones -->
+<h5><i class="bi bi-clock-history me-2"></i> Historial</h5>
+<ul class="list-group">
+    {% for obs in observaciones %}
+    <li class="list-group-item d-flex justify-content-between align-items-start">
+        <div class="flex-grow-1">
+            {{ obs.contenido }}<br>
+            <small class="text-muted">{{ obs.fecha_creacion }}</small>
+        </div>
+        <div class="ms-2 d-flex gap-1">
+            <button class="btn btn-sm btn-outline-primary btn-editar"
+                    data-id="{{ obs.id }}" data-contenido="{{ obs.contenido|escapejs }}">
+                <i class="bi bi-pencil"></i>
+            </button>
+            <button class="btn btn-sm btn-danger btnEliminacion" data-bs-toggle="modal" data-bs-target="#modalEliminar{{ obs.id }}">
+                <i class="bi bi-trash3-fill"></i>
+            </button>
+
+        </div>
+    </li>
+    {% empty %}
+    <li class="list-group-item text-muted">No hay observaciones aún.</li>
+    {% endfor %}
+</ul>
+
+{% for obs in observaciones %}
+<!-- Modal de confirmación para eliminar -->
+<div class="modal fade" id="modalEliminar{{ obs.id }}" tabindex="-1" aria-labelledby="modalEliminarLabel{{ obs.id }}" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header bg-danger text-white">
+        <h5 class="modal-title" id="modalEliminarLabel{{ obs.id }}">Confirmar Eliminación</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        ¿Estás seguro de que deseas eliminar esta observación?
+        <div class="mt-2 p-2 bg-light border rounded small">
+          "{{ obs.contenido|truncatewords:15 }}"
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <form method="POST" action="{% url 'eliminar_observacion' obs.id %}">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-danger">Eliminar</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endfor %}
+
+
+<!-- Script de validación y edición -->
+<script>
+    (function () {
+        'use strict';
+        const forms = document.querySelectorAll('.needs-validation');
+        Array.prototype.slice.call(forms).forEach(function (form) {
+            form.addEventListener('submit', function (event) {
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                form.classList.add('was-validated');
+            }, false);
+        });
+
+        // Editar observación
+        document.querySelectorAll('.btn-editar').forEach(button => {
+            button.addEventListener('click', function () {
+                const contenido = this.dataset.contenido;
+                const id = this.dataset.id;
+                document.getElementById('observacion').value = contenido;
+                document.getElementById('obs_id').value = id;
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+        });
+    })();
+</script>
+{% endblock %}

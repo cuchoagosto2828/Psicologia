@@ -1,0 +1,87 @@
+{% extends "./base.html" %}
+
+{% block title %} Edición de Historia Clínica {% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <h2 class="text-center mb-4">Editar Historia Clínica</h2>
+            <div class="card shadow">
+                <div class="card-body">
+                    <form id="editForm" action="/editarHistoriaClinica/" method="POST">
+                        {% csrf_token %}
+
+                        <div class="mb-3">
+                            <label for="txtId" class="form-label">ID de la Historia Clínica</label>
+                            <input type="hidden" name="id_historia" value="{{ historia.id_historia }}">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="txtIdEstudiante" class="form-label">Estudiante</label>
+                            <select id="id_estudiante" name="id_estudiante" class="form-select" required>
+                                {% for estudiante in estudiantes %}
+                                    <option value="{{ estudiante.id_estudiante }}" {% if historia.id_estudiante.id_estudiante == estudiante.id_estudiante %}selected{% endif %}>
+                                        {{ estudiante.nombres }} {{ estudiante.apellidos }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="txtIdDiagnostico" class="form-label">Diagnóstico</label>
+                            <select id="txtIdDiagnostico" name="txtIdDiagnostico" class="form-select" required>
+                                {% for diagnostico in diagnosticos %}
+                                    <option value="{{ diagnostico.id_diagnostico }}" {% if historia.id_diagnostico.id_diagnostico == diagnostico.id_diagnostico %}selected{% endif %}>
+                                        {{ diagnostico.diagnostico }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="txtObservaciones" class="form-label">Observaciones</label>
+                            <textarea id="txtObservaciones" name="txtObservaciones" class="form-control" rows="3" required>{{ historia.observaciones }}</textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="txtPIAR" class="form-label">PIAR (Opcional)</label>
+                            <textarea id="txtPIAR" name="txtPIAR" class="form-control" rows="2">{{ historia.PIAR }}</textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="txtDetallesPIAR" class="form-label">Detalles PIAR</label>
+                            <textarea id="txtDetallesPIAR" name="txtDetallesPIAR" class="form-control" rows="3" required>{{ historia.detalles_PIAR }}</textarea>
+                        </div>
+
+                        <div class="text-center mt-4">
+                            <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#confirmModal">Guardar Cambios</button>
+                            <a href="{% url 'gestionHistoriaClinica' %}" class="btn btn-secondary">Cancelar</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Confirmación -->
+<div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmModalLabel">Confirmar Edición</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+                ¿Estás seguro de que quieres guardar los cambios de esta historia clínica?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="submit" class="btn btn-success" onclick="document.getElementById('editForm').submit();">Sí, Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

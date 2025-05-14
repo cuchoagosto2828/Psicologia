@@ -1,0 +1,57 @@
+{% extends "./base.html" %}
+
+{% block title %} Edición de Diagnóstico {% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <h2 class="text-center mb-4">Editar Diagnóstico</h2>
+            <div class="card shadow">
+                <div class="card-body">
+                    <form id="editForm" action="/editarDiagnostico/" method="POST">{% csrf_token %}
+                        <input type="hidden" name="txtId" value="{{ diagnostico.id_diagnostico }}">
+
+                        <div class="mb-3">
+                            <label for="txtDiagnostico" class="form-label">Diagnóstico</label>
+                            <input type="text" id="txtDiagnostico" name="txtDiagnostico" 
+                                   class="form-control" value="{{ diagnostico.diagnostico }}" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="txtNivel" class="form-label">Nivel</label>
+                            <input type="number" id="txtNivel" name="txtNivel" class="form-control" 
+                                   value="{{ diagnostico.nivel }}" min="1" max="10" required>
+                        </div>
+
+                        <div class="text-center mt-4">
+                            <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#confirmModal">Guardar Cambios</button>
+                            <a href="{% url 'gestionDiagnostico' %}" class="btn btn-secondary">Cancelar</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Confirmación -->
+<div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmModalLabel">Confirmar Edición</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+                ¿Estás seguro de que quieres guardar los cambios de este diagnóstico?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="submit" class="btn btn-success" onclick="document.getElementById('editForm').submit();">Sí, Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

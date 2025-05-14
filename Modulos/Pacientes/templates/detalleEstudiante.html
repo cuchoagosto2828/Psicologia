@@ -1,0 +1,72 @@
+{% extends "./base.html" %}
+
+{% block title %} Detalles de {{ estudiante.nombres }} {% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <h2 class="text-primary"><i class="bi bi-person-badge"></i> Información del Estudiante</h2>
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <p><strong>Nombre:</strong> {{ estudiante.nombres }} {{ estudiante.apellidos }}</p>
+            <p><strong>Documento:</strong> {{ estudiante.documento }}</p>
+            <p><strong>Edad:</strong> {{ estudiante.edad }}</p>
+            <p><strong>Grado:</strong> {{ estudiante.grado }}</p>
+            <p><strong>Diagnóstico:</strong> {{ estudiante.id_diagnostico.diagnostico|default:"Sin diagnóstico" }}</p>
+            <p><strong>Dirección:</strong> {{ estudiante.direccion }}</p>
+            <p><strong>Email:</strong> {{ estudiante.email }}</p>
+            <p><strong>Acudiente:</strong>  {{ estudiante.nombreAcudiente }} {{ estudiante.apellidoAcudiente }}</p>
+            <p><strong>Documento:</strong> {{ estudiante.documentoAcu }}</p>
+            <p><strong>Telefono de acudiente:</strong> {{ estudiante.telefonoAcu }}</p>
+            <p><strong>Email de acudiente:</strong> {{ estudiante.documentoAcu }}</p>
+        </div>
+    </div>
+
+    {% if historia_clinica %}
+    <h3 class="mt-4 text-primary"><i class="bi bi-journal-medical"></i> Historia Clínica</h3>
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <p><strong>Observaciones:</strong> {{ historia_clinica.observaciones|default:"No hay observaciones" }}</p>
+            <p><strong>PIAR:</strong> {{ historia_clinica.PIAR|default:"No registrado" }}</p>
+            <p><strong>Detalles PIAR:</strong> {{ historia_clinica.detalles_PIAR|default:"No hay detalles" }}</p>
+        </div>
+    </div>
+    {% endif %}
+
+    <h3 class="mt-4 text-primary"><i class="bi bi-calendar-check"></i> Citas Registradas</h3>
+    {% if citas %}
+    <ul class="list-group">
+        {% for cita in citas %}
+        <li class="list-group-item">
+            <strong>Fecha:</strong> {{ cita.fecha|date:"d/m/Y H:i" }} - <strong>Motivo:</strong> {{ cita.motivo }}
+        </li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <p>No hay citas registradas.</p>
+    {% endif %}
+    <a href="{% url 'gestionCitas' %}?abrir_modal=1&id_estudiante={{ estudiante.id_estudiante }}" class="btn btn-success">
+        <i class="bi bi-plus-circle"></i> Agregar Cita
+    </a>  
+
+    <h3 class="mt-4 text-primary"><i class="bi bi-calendar-check"></i> Intervenciones Registradas</h3>
+    {% if intervenciones %}
+    <h3 class="mt-4 text-primary"><i class="bi bi-clipboard-pulse"></i> Intervenciones</h3>
+    <ul class="list-group">
+        {% for intervencion in intervenciones %}
+        <li class="list-group-item">
+            <strong>Fecha:</strong> {{ intervencion.fecha|date:"d/m/Y" }} - <strong>Tipo:</strong> {{ intervencion.tipo_intervencion }} - <strong>Detalles:</strong> {{ intervencion.detalles }}
+        </li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <p>No hay intervenciones registradas.</p>
+    {% endif %}
+    <a href="{% url 'gestionIntervenciones' %}?abrir_modal=1&id_estudiante={{ estudiante.id_estudiante }}" class="btn btn-success">
+        <i class="bi bi-plus-circle"></i> Agregar Intervención</a>  
+    
+
+    <a href="{% url 'gestionEstudiantes' %}" class="btn btn-secondary mt-3">
+        <i class="bi bi-arrow-left"></i> Volver a la lista
+    </a>
+</div>
+{% endblock %}

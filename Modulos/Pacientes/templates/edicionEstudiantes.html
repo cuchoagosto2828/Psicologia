@@ -1,0 +1,132 @@
+{% extends "./base.html" %}
+
+{% block title %} Edición de Estudiante {% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <h2 class="text-center mb-4">Editar Estudiante</h2>
+            <div class="card shadow">
+                <div class="card-body">
+                    <form id="editForm" action="/editarEstudiante/" method="POST">{% csrf_token %}
+                        
+                        <div class="mb-3">
+                            <label for="txtId" class="form-label">ID del Estudiante</label>
+                            <input type="text" id="txtId" name="txtId" value="{{ estudiante.id_estudiante }}" 
+                                   class="form-control" readonly required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="txtDocumento" class="form-label">Documento</label>
+                            <input type="text" id="txtDocumento" name="txtDocumento" value="{{ estudiante.documento }}" 
+                                   class="form-control" maxlength="10" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="txtNombres" class="form-label">Nombres</label>
+                            <input type="text" id="txtNombres" name="txtNombres" value="{{ estudiante.nombres }}" 
+                                   class="form-control" maxlength="35" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="txtApellidos" class="form-label">Apellidos</label>
+                            <input type="text" id="txtApellidos" name="txtApellidos" value="{{ estudiante.apellidos }}" 
+                                   class="form-control" maxlength="35" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="txtEdad" class="form-label">Edad</label>
+                            <input type="number" id="txtEdad" name="txtEdad" value="{{ estudiante.edad }}" 
+                                   class="form-control" min="1" max="99" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="txtDireccion" class="form-label">Dirección</label>
+                            <input type="text" id="txtDireccion" name="txtDireccion" value="{{ estudiante.direccion }}" 
+                                   class="form-control" maxlength="80" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="txtEmail" class="form-label">Email</label>
+                            <input type="email" id="txtEmail" name="txtEmail" value="{{ estudiante.email }}" 
+                                   class="form-control" maxlength="100">
+                        </div>
+                        <div class="mb-3">
+                            <label for="txtnombreAcudiente" class="form-label">Nombres del Acudiente</label>
+                            <input type="text" id="txtnombreAcudiente" name="txtnombreAcudiente" value="{{ estudiante.nombreAcudiente }}" 
+                                   class="form-control" maxlength="35" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="txtapellidoAcudiente" class="form-label">Apellidos del Acudiente</label>
+                            <input type="text" id="txtapellidoAcudiente" name="txtapellidoAcudiente" value="{{ estudiante.apellidoAcudiente }}" 
+                                   class="form-control" maxlength="35" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="txtdocumentoAcu" class="form-label">Documento de acudiente</label>
+                            <input type="text" id="txtdocumentoAcu" name="txtdocumentoAcu" value="{{ estudiante.documentoAcu }}" 
+                                   class="form-control" maxlength="10" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="txtTelefonoAcu" class="form-label">Teléfono del Acudiente</label>
+                            <input type="text" id="txtTelefonoAcu" name="txtTelefonoAcu" value="{{ estudiante.telefonoAcu }}" 
+                                   class="form-control" maxlength="35" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="txtEmailAcu" class="form-label">Email</label>
+                            <input type="email" id="txtEmailAcu" name="txtEmailAcu" value="{{ estudiante.emailAcu }}" 
+                                   class="form-control" maxlength="100">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="txtGrado" class="form-label">Grado</label>
+                            <select id="txtGrado" name="txtGrado" class="form-select" required>
+                                {% for clave, valor in grados %}
+                                    <option value="{{ clave }}" {% if estudiante.grado == clave %}selected{% endif %}>{{ valor }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="txtIdTrastorno" class="form-label">Diagnóstico Predeterminado</label>
+                            <select id="txtIdTrastorno" name="txtIdTrastorno" class="form-select">
+                                <option value="">-- Seleccione un diagnóstico --</option>
+                                {% for trastorno in trastornos %}
+                                    <option value="{{ trastorno.id_trastorno }}" {% if estudiante.id_diagnostico and estudiante.id_diagnostico.id_trastorno == trastorno.id_trastorno %}selected{% endif %}>
+                                        {{ trastorno.nombre }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        
+                        <div class="text-center mt-4">
+                            <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#confirmModal">Guardar Cambios</button>
+                            <a href="{% url 'gestionEstudiantes' %}" class="btn btn-secondary">Cancelar</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Confirmación -->
+<div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmModalLabel">Confirmar Edición</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+                ¿Estás seguro de que quieres guardar los cambios de este estudiante?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="submit" class="btn btn-success" onclick="document.getElementById('editForm').submit();">Sí, Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

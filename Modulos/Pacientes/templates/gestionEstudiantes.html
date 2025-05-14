@@ -1,0 +1,221 @@
+{% extends "./base.html" %}
+
+{% block title %} Gestión de Estudiantes {% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <div class="row">
+        <!-- Mensajes de éxito -->
+        {% if messages %}
+            <div class="col-12">
+                {% for message in messages %}
+                <div class="alert alert-success alert-dismissible fade show d-flex align-items-center" role="alert">
+                    <i class="bi bi-check-circle-fill me-2"></i>
+                    <strong>{{ message }}</strong>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <!-- Encabezado y Botón de Nuevo Estudiante -->
+        <div class="col-12 d-flex justify-content-between align-items-center mb-3">
+            <h2 class="text-primary"><i class="bi bi-person-lines-fill"></i> Gestión de Estudiantes</h2>
+            <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modalRegistro">
+                <i class="bi bi-plus-circle"></i> Nuevo Estudiante
+            </button>
+        </div>
+
+        <!-- Tabla de Estudiantes -->
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Código</th>
+                                    <th>Documento</th>
+                                    <th>Nombres</th>
+                                    <th>Apellidos</th>
+                                    <th>Edad</th>
+                                    <th>Grado</th>
+                                    <th>Diagnóstico</th>
+                                    <th>Opciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for e in estudiantes %}
+                                <tr>
+                                    <td>{{ e.id_estudiante }}</td>
+                                    <td>{{ e.documento }}</td>
+                                    <td>{{ e.nombres }}</td>
+                                    <td>{{ e.apellidos }}</td>
+                                    <td>{{ e.edad }}</td>
+                                    <td>{{ e.grado }}</td>
+                                    <td>{{ e.id_diagnostico.diagnostico|default:"Sin diagnóstico" }}</td>
+                                    <td>
+                                        <a href="/detalleEstudiante/{{ e.id_estudiante }}" class="btn btn-primary">
+                                            <i class="bi bi-eye-fill"></i>                   
+                                        </a>
+                                        <a href="/edicionEstudiante/{{ e.id_estudiante }}" class="btn btn-info">
+                                            <i class="bi bi-pencil-square"></i> 
+                                        </a>
+                                        <button class="btn btn-danger btnEliminacion" data-bs-toggle="modal" data-bs-target="#modalEliminar{{ e.id_estudiante }}">
+                                            <i class="bi bi-trash3-fill"></i> 
+                                        </button>
+                                        <a href="/edicionEstudiante/{{ e.id_estudiante }}" class="btn btn-warning">
+                                            <i class="bi bi-journals"></i>
+                                        </a> 
+                                    </td>
+                                    
+                                    <!-- Modal de Confirmación para Eliminar -->
+                                    <div class="modal fade" id="modalEliminar{{ e.id_estudiante }}" tabindex="-1" aria-labelledby="modalEliminarLabel{{ e.id_estudiante }}" aria-hidden="true">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header bg-danger text-white">
+                                                    <h5 class="modal-title" id="modalEliminarLabel{{ e.id_estudiante }}">
+                                                        <i class="fas fa-exclamation-triangle"></i> Confirmar Eliminación
+                                                    </h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    ¿Estás seguro de que quieres eliminar al estudiante <strong>#{{ e.id_estudiante }}</strong>? Esta acción no se puede deshacer.
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                                    <a href="/eliminarEstudiante/{{ e.id_estudiante }}" class="btn btn-danger">
+                                                        <i class="fas fa-trash-alt"></i> Sí, Eliminar
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                </tr>
+
+                                <!-- Modal de Confirmación para Eliminar -->
+                                <div class="modal fade" id="modalEliminar{{ e.id_estudiante }}" tabindex="-1" aria-labelledby="modalEliminarLabel{{ e.id_estudiante }}" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header bg-danger text-white">
+                                                <h5 class="modal-title" id="modalEliminarLabel{{ e.id_estudiante }}">
+                                                    <i class="fas fa-exclamation-triangle"></i> Confirmar Eliminación
+                                                </h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                ¿Estás seguro de que quieres eliminar al estudiante <strong>#{{ e.id_estudiante }}</strong>? Esta acción no se puede deshacer.
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                                <a href="/eliminarEstudiante/{{ e.id_estudiante }}" class="btn btn-danger">
+                                                    <i class="fas fa-trash-alt"></i> Sí, Eliminar
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Registro -->
+<div class="modal fade" id="modalRegistro" tabindex="-1" aria-labelledby="modalRegistroLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="modalRegistroLabel"><i class="bi bi-person-plus-fill"></i> Nuevo Estudiante</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form action="/registrarEstudiante/" method="POST" class="needs-validation" novalidate>
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="txtIdEstudiante" class="form-label">ID del estudiante</label>
+                        <input type="text" id="txtIdEstudiante" name="txtIdEstudiante" class="form-control" placeholder="ID del estudiante" required>
+                    </div>
+                    <div class="mb-3">
+                        <input type="text" id="txtDocumento" name="txtDocumento" class="form-control" placeholder="Documento del estudiante" maxlength="10" required>
+                    </div>
+                    <div class="mb-3">
+                        <input type="text" id="txtNombres" name="txtNombres" class="form-control" placeholder="Nombres del estudiante" maxlength="50" required>
+                    </div>
+                    <div class="mb-3">
+                        <input type="text" id="txtApellidos" name="txtApellidos" class="form-control" placeholder="Apellidos del estudiante" maxlength="50" required>
+                    </div>
+                    <div class="mb-3">
+                        <input type="number" id="txtEdad" name="txtEdad" class="form-control" placeholder="Edad del estudiante" min="1" max="99" required>
+                    </div>
+                    <div class="mb-3">
+                        <input type="text" id="txtDireccion" name="txtDireccion" class="form-control" placeholder="Dirección del estudiante" min="1" max="99" required>
+                    </div>
+                    <div class="mb-3">
+                        <input type="text" id="txtEmail" name="txtEmail" class="form-control" placeholder="Email del estudiante" min="1" max="99" required>
+                    </div>
+
+                    <div class="mb-3">   
+                        <label for="txtGrado" class="form-label">Grado del estudiante</label>
+                        <select id="txtGrado" name="txtGrado" class="form-select">
+                            {% for codigo, nombre in grados %}
+                                <option value="{{ codigo }}">{{ nombre }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="txtIdDiagnostico" class="form-label">Diagnóstico</label>
+                        <select id="txtIdDiagnostico" name="txtIdDiagnostico" class="form-select">
+                            <option value="">Sin diagnóstico</option> <!-- Opción para no asignar trastorno -->
+                            {% for trastorno in trastornos %}
+                                <option value="{{ trastorno.id_trastorno }}">{{ trastorno.nombre }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>                    
+                    <div class="mb-3">
+                        <input type="text" id="txtnombreAcudiente" name="txtnombreAcudiente" class="form-control" placeholder="Nombres del acudiente" min="1" max="99" required>
+                    </div>
+                    <div class="mb-3">
+                        <input type="text" id="txtapellidoAcudiente" name="txtapellidoAcudiente" class="form-control" placeholder="Apellidos del acudiente" min="1" max="99" required>
+                    </div>
+                    <div class="mb-3">
+                        <input type="text" id="txtdocumentoAcu" name="txtdocumentoAcu" class="form-control" placeholder="Documento del acudiente" min="1" max="99" required>
+                    </div>
+                    <div class="mb-3">
+                        <input type="text" id="txtTelefonoAcu" name="txtTelefonoAcu" class="form-control" placeholder="Teléfono del acudiente" min="1" max="99" required>
+                    </div>
+                    <div class="mb-3">
+                        <input type="text" id="txtEmailAcu" name="txtEmailAcu" class="form-control" placeholder="Email del acudiente" min="1" max="99" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="bi bi-save"></i> Guardar Estudiante
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Scripts de Bootstrap -->
+<script>
+    // Validación de formularios
+    (function () {
+        'use strict'
+        var forms = document.querySelectorAll('.needs-validation')
+        Array.prototype.slice.call(forms).forEach(function (form) {
+            form.addEventListener('submit', function (event) {
+                if (!form.checkValidity()) {
+                    event.preventDefault()
+                    event.stopPropagation()
+                }
+                form.classList.add('was-validated')
+            }, false)
+        })
+    })();
+</script>
+{% endblock %}

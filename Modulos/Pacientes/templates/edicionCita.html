@@ -1,0 +1,67 @@
+{% extends "./base.html" %}
+
+{% block title %}Editar Cita{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <h2 class="text-center mb-4">Editar Cita</h2>
+            <div class="card shadow">
+                <div class="card-body">
+                    <form id="editCitaForm" action="/editarCita/" method="POST">
+                        {% csrf_token %}
+
+                        <input type="hidden" name="id_cita" value="{{ cita.id_cita }}">
+
+                        <div class="mb-3">
+                            <label for="id_estudiante" class="form-label">Estudiante</label>
+                            <select id="id_estudiante" name="id_estudiante" class="form-select" required>
+                                {% for estudiante in estudiantes %}
+                                    <option value="{{ estudiante.id_estudiante }}" {% if cita.id_estudiante.id_estudiante == estudiante.id_estudiante %}selected{% endif %}>
+                                        {{ estudiante.nombres }} {{ estudiante.apellidos }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="fecha" class="form-label">Fecha y Hora</label>
+                            <input type="datetime-local" id="fecha" name="fecha" class="form-control" value="{{ cita.fecha|date:'Y-m-d\TH:i' }}" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="motivo" class="form-label">Motivo</label>
+                            <textarea id="motivo" name="motivo" class="form-control" rows="3" required>{{ cita.motivo }}</textarea>
+                        </div>
+
+                        <div class="text-center mt-4">
+                            <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#confirmModal">Guardar Cambios</button>
+                            <a href="/gestionCitas/" class="btn btn-secondary">Cancelar</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Confirmación -->
+<div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmModalLabel">Confirmar Edición</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+                ¿Estás seguro de que quieres guardar los cambios en esta cita?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="submit" class="btn btn-success" onclick="document.getElementById('editCitaForm').submit();">Sí, Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

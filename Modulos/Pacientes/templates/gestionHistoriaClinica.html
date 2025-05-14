@@ -1,0 +1,208 @@
+{% extends "./base.html" %}
+
+{% block title %} Gestión de Historias Clínicas {% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <div class="row">
+        <!-- Mensajes de éxito -->
+        {% if messages %}
+            <div class="col-12">
+                {% for message in messages %}
+                <div class="alert alert-success alert-dismissible fade show d-flex align-items-center" role="alert">
+                    <i class="bi bi-check-circle-fill me-2"></i>
+                    <strong>{{ message }}</strong>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <!-- Encabezado y Botón de Nueva Historia Clínica -->
+        <div class="col-12 d-flex justify-content-between align-items-center mb-3">
+            <h2 class="text-primary"><i class="bi bi-file-medical-fill"></i> Gestión de Historias Clínicas</h2>
+            <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modalRegistro">
+                <i class="bi bi-plus-circle"></i> Nueva Historia Clínica
+            </button>
+        </div>
+
+        <!-- Tabla de Historias Clínicas -->
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Estudiante</th>
+                                    <th>Fecha</th>
+                                    <th>Motivo</th>
+                                    <th>Estado actual</th>
+                                    <th>Diagnóstico</th>
+                                    <th>Opciones</th>
+                                </tr>
+                            </thead>
+                            
+                            <tbody>
+                                {% for historia in historias_clinicas %}
+                                <tr>
+                                    <td>{{ historia.id_historia }}</td>
+                                    <td>{{ historia.id_estudiante.nombres }} {{ historia.id_estudiante.apellidos }}</td>
+                                    <td>{{ historia.fecha_creacion|date:"d/m/Y" }}</td>
+                                    <td>{{ historia.motivo_consulta|truncatechars:40 }}</td>
+                                    <td>{{ historia.estado_actual }}</td>
+                                    <td>{{ historia.id_diagnostico.diagnostico }}</td>
+                                    <td>
+                                        <a href="/edicionHistoriaClinica/{{ historia.id_historia }}" class="btn btn-info">
+                                            <i class="fas fa-edit"></i> Editar
+                                        </a>
+                                        <button class="btn btn-danger btnEliminacion" data-bs-toggle="modal" data-bs-target="#modalEliminar{{ historia.id_historia }}">
+                                            <i class="fas fa-trash-alt"></i> Eliminar
+                                        </button>
+                                    </td>
+                                </tr>
+                            
+                                <!-- Modal de Confirmación para Eliminar -->
+                                <div class="modal fade" id="modalEliminar{{ historia.id_historia }}" tabindex="-1" aria-labelledby="modalEliminarLabel{{ historia.id_historia }}" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header bg-danger text-white">
+                                                <h5 class="modal-title" id="modalEliminarLabel{{ historia.id_historia }}">
+                                                    <i class="fas fa-exclamation-triangle"></i> Confirmar Eliminación
+                                                </h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                ¿Estás seguro de que quieres eliminar la historia clínica <strong>#{{ historia.id_historia }}</strong>? Esta acción no se puede deshacer.
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                                <a href="/eliminarHistoriaClinica/{{ historia.id_historia }}" class="btn btn-danger">
+                                                    <i class="fas fa-trash-alt"></i> Sí, Eliminar
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </tbody>
+                            
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Registro -->
+<div class="modal fade" id="modalRegistro" tabindex="-1" aria-labelledby="modalRegistroLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header bg-primary text-white">
+          <h5 class="modal-title" id="modalRegistroLabel">
+            <i class="bi bi-file-plus"></i> Nueva Historia Clínica
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          <form action="/registrarHistoriaClinica/" method="POST" class="needs-validation" novalidate>
+            {% csrf_token %}
+  
+            <!-- Tabs -->
+            <ul class="nav nav-tabs mb-3" id="tabsHistoria" role="tablist">
+              <li class="nav-item">
+                <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#datosPaciente" type="button">Datos del paciente</button>
+              </li>
+              <li class="nav-item">
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#motivoConsulta" type="button">Motivo y Observaciones</button>
+              </li>
+              <li class="nav-item">
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#planIntervencion" type="button">Diagnóstico y Plan</button>
+              </li>
+            </ul>
+  
+            <!-- Contenido de tabs -->
+            <div class="tab-content">
+              <!-- TAB 1 -->
+              <div class="tab-pane fade show active" id="datosPaciente" role="tabpanel">
+                <div class="mb-3">
+                  <label for="id_estudiante" class="form-label">Estudiante</label>
+                  <select id="id_estudiante" name="id_estudiante" class="form-select" required>
+                    {% for estudiante in estudiantes %}
+                    <option value="{{ estudiante.id_estudiante }}">{{ estudiante.nombres }} {{ estudiante.apellidos }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+                <div class="mb-3">
+                  <label for="estado_actual" class="form-label">Estado emocional actual</label>
+                  <input type="text" id="estado_actual" name="estado_actual" class="form-control" placeholder="Ej: Ansioso, tranquilo, disperso..." required>
+                </div>
+              </div>
+  
+              <!-- TAB 2 -->
+              <div class="tab-pane fade" id="motivoConsulta" role="tabpanel">
+                <div class="mb-3">
+                  <label for="motivo_consulta" class="form-label">Motivo de consulta</label>
+                  <textarea id="motivo_consulta" name="motivo_consulta" class="form-control" rows="3" required></textarea>
+                </div>
+                <div class="mb-3">
+                  <label for="observaciones" class="form-label">Observaciones</label>
+                  <textarea id="observaciones" name="observaciones" class="form-control" rows="3"></textarea>
+                </div>
+              </div>
+              <div class="mb-3">
+                <label for="fecha_creacion" class="form-label">Fecha y hora de atención</label>
+                <input type="datetime-local" id="fecha_creacion" name="fecha_creacion" class="form-control" required>
+            </div>
+            
+              <!-- TAB 3 -->
+              <div class="tab-pane fade" id="planIntervencion" role="tabpanel">
+                <div class="mb-3">
+                  <label for="id_diagnostico" class="form-label">Diagnóstico</label>
+                  <select id="id_diagnostico" name="id_diagnostico" class="form-select" required>
+                    {% for diagnostico in diagnosticos %}
+                    <option value="{{ diagnostico.id_diagnostico }}">{{ diagnostico.diagnostico }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+                <div class="mb-3">
+                  <label for="PIAR" class="form-label">PIAR</label>
+                  <textarea id="PIAR" name="PIAR" class="form-control" placeholder="Plan Individual de Ajuste Razonable (opcional)"></textarea>
+                </div>
+                <div class="mb-3">
+                  <label for="detalles_PIAR" class="form-label">Detalles del PIAR</label>
+                  <textarea id="detalles_PIAR" name="detalles_PIAR" class="form-control"></textarea>
+                </div>
+              </div>
+            </div>
+  
+            <button type="submit" class="btn btn-primary w-100 mt-3">
+              <i class="bi bi-save"></i> Guardar Historia Clínica
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+
+<!-- Scripts de Bootstrap -->
+<script>
+    // Validación de formularios
+    (function () {
+        'use strict'
+        var forms = document.querySelectorAll('.needs-validation')
+        Array.prototype.slice.call(forms).forEach(function (form) {
+            form.addEventListener('submit', function (event) {
+                if (!form.checkValidity()) {
+                    event.preventDefault()
+                    event.stopPropagation()
+                }
+                form.classList.add('was-validated')
+            }, false)
+        })
+    })();
+</script>
+{% endblock %}

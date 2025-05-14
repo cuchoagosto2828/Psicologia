@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Psicología COSFA | Tejiendo sentidos</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+  <style>
+    :root {
+      --primary: #8862E1; /* Púrpura principal */
+      --primary-light: #A98BEA; /* Púrpura claro */
+      --secondary: #6D4AE4; /* Púrpura secundario */
+      --accent: #FB8C00; /* Naranja acento */
+      --text-dark: #222222; /* Texto oscuro */
+      --text-light: #666666; /* Texto gris */
+      --background: #FFFFFF; /* Fondo blanco */
+      --background-light: #F8F9FF; /* Fondo claro */
+      --shadow: rgba(136, 98, 225, 0.1); /* Sombra púrpura suave */
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', 'Segoe UI', sans-serif;
+      background-color: var(--background);
+      color: var(--text-dark);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    .main-container {
+      display: flex;
+      min-height: 100vh;
+      flex-direction: column;
+    }
+
+    .content-area {
+      background-color: var(--background-light);
+      flex: 1;
+      border-radius: 0 0 0 80px;
+    }
+
+    /* Navbar */
+    nav {
+      background-color: var(--background);
+      padding: 15px 0;
+      position: sticky;
+      top: 0;
+      width: 100%;
+      z-index: 1000;
+    }
+
+    .nav-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+    }
+
+    .logo-text {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      align-items: center;
+    }
+
+    .nav-links a {
+      color: var(--text-dark);
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 0.95rem;
+      transition: color 0.3s ease;
+      position: relative;
+    }
+
+    .nav-links a:hover {
+      color: var(--primary);
+    }
+
+    .nav-links .active {
+      color: var(--primary);
+      font-weight: 600;
+    }
+
+
+
+    .btn-login {
+      background-color: var(--primary);
+      color: white;
+      padding: 10px 24px;
+      border-radius: 30px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      border: none;
+      cursor: pointer;
+      display: inline-block;
+    }
+
+    .btn-login:hover {
+      background-color: var(--secondary);
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px var(--shadow);
+    }
+
+    .hamburger {
+      display: none;
+      cursor: pointer;
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      color: var(--primary);
+    }
+
+    /* Hero Section */
+    .hero {
+      display: flex;
+      align-items: center;
+      min-height: calc(100vh - 70px);
+      padding: 50px 0;
+      position: relative;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      align-items: center;
+    }
+
+    .hero-content {
+      max-width: 570px;
+    }
+
+    .badge {
+      display: inline-block;
+      background-color: rgba(136, 98, 225, 0.1);
+      color: var(--primary);
+      border-radius: 20px;
+      padding: 6px 15px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin-bottom: 25px;
+    }
+
+    .hero h1 {
+      font-size: 3.5rem;
+      line-height: 1.2;
+      margin-bottom: 20px;
+      color: var(--text-dark);
+      font-weight: 800;
+    }
+
+    .hero p {
+      color: var(--text-light);
+      font-size: 1.1rem;
+      margin-bottom: 30px;
+      line-height: 1.7;
+    }
+
+    .hero-buttons {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 40px;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 14px 30px;
+      font-size: 1rem;
+      font-weight: 600;
+      text-decoration: none;
+      border-radius: 30px;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .btn-primary {
+      background-color: var(--primary);
+      color: white;
+      box-shadow: 0 5px 15px var(--shadow);
+    }
+
+    .btn-primary:hover {
+      background-color: var(--secondary);
+      transform: translateY(-3px);
+    }
+
+    .btn-outline {
+      background-color: transparent;
+      color: var(--text-dark);
+      border: 1px solid #E0E0E0;
+    }
+
+    .btn-outline:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+      transform: translateY(-3px);
+    }
+
+    .stats-container {
+      display: flex;
+      gap: 40px;
+    }
+
+    .stat-box {
+      background-color: white;
+      border-radius: 12px;
+      padding: 20px;
+      min-width: 130px;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.03);
+      text-align: center;
+    }
+
+    .stat-number {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--accent);
+      margin-bottom: 5px;
+    }
+
+    .stat-label {
+      font-size: 0.85rem;
+      color: var(--text-light);
+    }
+
+    .hero-image {
+      position: relative;
+    }
+
+    .hero-img-main {
+      width: 100%;
+      height: auto;
+      border-radius: 20px;
+      object-fit: cover;
+    }
+
+    .highlight-box {
+      position: absolute;
+      background-color: white;
+      border-radius: 12px;
+      padding: 15px;
+      box-shadow: 0 5px 25px rgba(0, 0, 0, 0.08);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .highlight-box.one {
+      top: 20px;
+      right: -30px;
+    }
+
+    .highlight-box.two {
+      bottom: 30px;
+      left: -30px;
+    }
+
+    .highlight-icon {
+      width: 40px;
+      height: 40px;
+      background-color: rgba(136, 98, 225, 0.1);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--primary);
+      font-size: 1.2rem;
+    }
+
+    .highlight-text {
+      font-size: 0.85rem;
+      line-height: 1.4;
+    }
+
+    .highlight-text strong {
+      display: block;
+      color: var(--text-dark);
+    }
+
+    /* Features section */
+    .features {
+      padding: 100px 0;
+      background-color: var(--background);
+    }
+
+    .section-header {
+      text-align: center;
+      margin-bottom: 60px;
+    }
+
+    .section-header h2 {
+      font-size: 2.5rem;
+      color: var(--text-dark);
+      margin-bottom: 15px;
+      font-weight: 700;
+    }
+
+    .section-header p {
+      font-size: 1.1rem;
+      color: var(--text-light);
+      max-width: 700px;
+      margin: 0 auto;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 30px;
+    }
+
+    .feature-card {
+      background-color: var(--background-light);
+      border-radius: 15px;
+      padding: 30px;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 15px 30px var(--shadow);
+    }
+
+    .feature-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 60px;
+      height: 60px;
+      background-color: rgba(136, 98, 225, 0.1);
+      border-radius: 12px;
+      margin-bottom: 20px;
+      color: var(--primary);
+      font-size: 1.5rem;
+    }
+
+    .feature-card h3 {
+      margin-bottom: 15px;
+      color: var(--text-dark);
+      font-size: 1.3rem;
+    }
+
+    .feature-card p {
+      color: var(--text-light);
+      font-size: 0.95rem;
+      line-height: 1.7;
+    }
+
+    /* Testimonials */
+    .testimonials {
+      padding: 100px 0;
+      background-color: var(--background-light);
+    }
+
+    .testimonials-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 30px;
+      margin-top: 50px;
+    }
+
+    .testimonial-card {
+      background-color: var(--background);
+      border-radius: 15px;
+      padding: 30px;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.03);
+    }
+
+    .testimonial-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .testimonial-avatar {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin-right: 15px;
+    }
+
+    .testimonial-author h4 {
+      font-size: 1.1rem;
+      margin-bottom: 5px;
+    }
+
+    .testimonial-author p {
+      font-size: 0.85rem;
+      color: var(--text-light);
+    }
+
+    .testimonial-rating {
+      display: flex;
+      gap: 3px;
+      color: var(--accent);
+      font-size: 0.9rem;
+      margin-bottom: 15px;
+    }
+
+    .testimonial-text {
+      color: var(--text-light);
+      font-size: 0.95rem;
+      line-height: 1.7;
+    }
+
+    /* Contact section */
+    .contact {
+      padding: 100px 0;
+      background-color: var(--background);
+    }
+
+    .contact-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 30px;
+      margin-top: 50px;
+    }
+
+    .contact-info {
+      display: flex;
+      flex-direction: column;
+      gap: 30px;
+    }
+
+    .contact-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 15px;
+    }
+
+    .contact-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 50px;
+      height: 50px;
+      background-color: rgba(136, 98, 225, 0.1);
+      border-radius: 12px;
+      color: var(--primary);
+      font-size: 1.2rem;
+    }
+
+    .contact-details h3 {
+      font-size: 1.1rem;
+      margin-bottom: 5px;
+    }
+
+    .contact-details p, .contact-details a {
+      color: var(--text-light);
+      text-decoration: none;
+      font-size: 0.95rem;
+      transition: color 0.3s ease;
+    }
+
+    .contact-details a:hover {
+      color: var(--primary);
+    }
+
+    .contact-form {
+      background-color: var(--background-light);
+      border-radius: 15px;
+      padding: 30px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 0.9rem;
+      color: var(--text-dark);
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 12px 15px;
+      border: 1px solid #E0E0E0;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      transition: border-color 0.3s ease;
+    }
+
+    .form-control:focus {
+      border-color: var(--primary);
+      outline: none;
+    }
+
+    textarea.form-control {
+      min-height: 120px;
+      resize: vertical;
+    }
+
+    .btn-submit {
+      width: 100%;
+      padding: 15px;
+      background-color: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .btn-submit:hover {
+      background-color: var(--secondary);
+      transform: translateY(-3px);
+      box-shadow: 0 5px 15px var(--shadow);
+    }
+
+    /* Partners */
+    .partners {
+      padding: 50px 0;
+      background-color: var(--primary);
+      border-radius: 20px;
+      margin: 50px 20px;
+    }
+
+    .partners-container {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 30px;
+    }
+
+    .partner-logo {
+      color: white;
+      font-size: 1.5rem;
+      font-weight: 700;
+      opacity: 0.9;
+      transition: opacity 0.3s ease;
+    }
+
+    .partner-logo:hover {
+      opacity: 1;
+    }
+
+    /* Footer */
+    footer {
+      background-color: var(--background);
+      padding: 80px 0 30px;
+    }
+
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 2fr repeat(3, 1fr);
+      gap: 50px;
+    }
+
+    .footer-about h3 {
+      font-size: 1.5rem;
+      color: var(--primary);
+      margin-bottom: 20px;
+    }
+
+    .footer-about p {
+      color: var(--text-light);
+      margin-bottom: 20px;
+      font-size: 0.95rem;
+      max-width: 350px;
+    }
+
+    .social-links {
+      display: flex;
+      gap: 15px;
+    }
+
+    .social-links a {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      background-color: rgba(136, 98, 225, 0.1);
+      border-radius: 50%;
+      color: var(--primary);
+      font-size: 1.1rem;
+      transition: all 0.3s ease;
+    }
+
+    .social-links a:hover {
+      background-color: var(--primary);
+      color: white;
+      transform: translateY(-3px);
+    }
+
+    .footer-links h4 {
+      font-size: 1.1rem;
+      margin-bottom: 25px;
+    }
+
+    .footer-links ul {
+      list-style: none;
+    }
+
+    .footer-links li {
+      margin-bottom: 12px;
+    }
+
+    .footer-links a {
+      color: var(--text-light);
+      text-decoration: none;
+      font-size: 0.95rem;
+      transition: color 0.3s ease;
+    }
+
+    .footer-links a:hover {
+      color: var(--primary);
+    }
+
+    .copyright {
+      margin-top: 50px;
+      padding-top: 20px;
+      border-top: 1px solid #EEEEEE;
+      text-align: center;
+      color: var(--text-light);
+      font-size: 0.9rem;
+    }
+
+    /* Responsive design */
+    @media (max-width: 768px) {
+      .nav-links {
+        position: fixed;
+        top: 70px;
+        left: 0;
+        right: 0;
+        background-color: var(--background);
+        flex-direction: column;
+        padding: 20px;
+        gap: 15px;
+        box-shadow: 0 5px 10px var(--shadow);
+        transform: translateY(-150%);
+        transition: transform 0.3s ease;
+        z-index: 999;
+      }
+
+      .nav-links.active {
+        transform: translateY(0);
+      }
+
+      .search-box {
+        margin-left: 0;
+        width: 100%;
+        margin-top: 15px;
+      }
+      
+      .search-box input {
+        width: 100%;
+      }
+
+      .hamburger {
+        display: block;
+      }
+
+      .hero-grid {
+        grid-template-columns: 1fr;
+        text-align: center;
+      }
+
+      .hero-content {
+        order: 1;
+      }
+
+      .hero-image {
+        order: 0;
+      }
+
+      .hero h1 {
+        font-size: 2.5rem;
+      }
+
+      .hero-buttons {
+        justify-content: center;
+      }
+      
+      .stats-container {
+        justify-content: center;
+      }
+
+      .highlight-box {
+        display: none;
+      }
+
+      .section-header h2 {
+        font-size: 2rem;
+      }
+
+      .footer-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .footer-about, .footer-links {
+        text-align: center;
+      }
+      
+      .footer-about p {
+        max-width: 100%;
+      }
+      
+      .social-links {
+        justify-content: center;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="main-container">
+    <div class="content-area">
+      <!-- Barra de navegación -->
+      <nav id="navbar">
+        <div class="nav-container">
+          <a href="#" class="logo">
+            <div class="logo-text">Psicología COSFA</div>
+          </a>
+          <button class="hamburger" id="hamburger">
+            <i class="fas fa-bars"></i>
+          </button>
+          <div class="nav-links" id="nav-links">
+            <a href="#inicio" class="active">Inicio</a>
+            <a href="#nosotros">Nosotros</a>
+            <a href="#testimonios">Testimonios</a>
+            <a href="#contacto">Contacto</a>
+            <a href="login" class="login-icon" title="Iniciar sesión">
+              <i class="fas fa-user"></i>
+            </a>
+          </div>
+        </div>
+      </nav>
+   
+
+      <!-- Sección Hero -->
+      <section id="inicio" class="hero">
+        <div class="container">
+          <div class="hero-grid">
+            <div class="hero-content">
+              <div class="badge">
+                <i class="fas fa-brain"></i> Tu bienestar emocional es prioridad
+              </div>
+              <h1>El Camino Hacia Tu Bienestar Emocional</h1>
+              <p>En Psicología COSFA nos dedicamos a ofrecer un acompañamiento profesional y empático para ayudarte a desarrollar herramientas psicológicas, mejorar tus relaciones y crecer como persona.</p>
+              <div class="hero-buttons">
+                <a href="/agendar" class="btn btn-primary">Agendar Cita</a>
+                <a href="#nosotros" class="btn btn-outline">Conoce Más</a>
+              </div>
+              <div class="stats-container">
+                <div class="stat-box">
+                  <div class="stat-number">500+</div>
+                  <div class="stat-label">Pacientes atendidos</div>
+                </div>
+                <div class="stat-box">
+                  <div class="stat-number">10+</div>
+                  <div class="stat-label">Años de experiencia</div>
+                </div>
+                <div class="stat-box">
+                  <div class="stat-number">98%</div>
+                  <div class="stat-label">Satisfacción</div>
+                </div>
+              </div>
+            </div>
+            <div class="hero-image">
+              <img src="/api/placeholder/400/500" alt="Psicóloga profesional" class="hero-img-main">
+              <div class="highlight-box one">
+                <div class="highlight-icon">
+                  <i class="fas fa-heart"></i>
+                </div>
+                <div class="highlight-text">
+                  <strong>Terapia personalizada</strong>
+                  Atención individual
+                </div>
+              </div>
+              <div class="highlight-box two">
+                <div class="highlight-icon">
+                  <i class="fas fa-certificate"></i>
+                </div>
+                <div class="highlight-text">
+                  <strong>Profesionales certificados</strong>
+                  Expertos en salud mental
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Sección Nosotros -->
+    <section id="nosotros" class="features">
+      <div class="container">
+        <div class="section-header">
+          <h2>¿Quiénes somos?</h2>
+          <p>En Psicología COSFA nos dedicamos a brindar acompañamiento psicológico con enfoque humano y empático. 
+            Te ofrecemos un espacio seguro para tejer sentidos, sanar y crecer.</p>
+        </div>
+        <div class="features-grid">
+          <div class="feature-card">
+            <div class="feature-icon">
+              <i class="fas fa-heart"></i>
+            </div>
+            <h3>Acompañamiento Empático</h3>
+            <p>Ofrecemos un espacio de escucha y comprensión donde tus emociones son validadas y respetadas, promoviendo un entorno seguro para la sanación y el crecimiento personal.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">
+              <i class="fas fa-brain"></i>
+            </div>
+            <h3>Enfoque Profesional</h3>
+            <p>Nuestro equipo está conformado por psicólogos con amplia experiencia en diferentes áreas, comprometidos con tu bienestar y crecimiento personal a través de métodos actualizados.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">
+              <i class="fas fa-hands-holding"></i>
+            </div>
+            <h3>Atención Personalizada</h3>
+            <p>Reconocemos que cada persona es única, por eso desarrollamos estrategias adaptadas a tus necesidades específicas y metas personales para un tratamiento efectivo.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Sección Tips para Momentos de Crisis -->
+<section id="tips-crisis" class="features">
+  <div class="container">
+    <div class="section-header">
+      <h2>¿En Crisis?</h2>
+      <p>Aquí te compartimos algunas estrategias que pueden ayudarte a manejar situaciones difíciles y momentos de crisis emocional.</p>
+    </div>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">
+          <i class="fas fa-lungs"></i>
+        </div>
+        <h3>Respiración Consciente</h3>
+        <p>Practica la respiración profunda: inhala por 4 segundos, mantén por 4 segundos y exhala por 6 segundos. Repite este ciclo varias veces para calmar tu sistema nervioso y reducir la ansiedad inmediata.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">
+          <i class="fas fa-hand-peace"></i>
+        </div>
+        <h3>Técnica 5-4-3-2-1</h3>
+        <p>Identifica 5 cosas que puedes ver, 4 que puedes tocar, 3 que puedes oír, 2 que puedes oler y 1 que puedes saborear. Esta técnica te ayuda a anclarte en el presente y reducir pensamientos abrumadores.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">
+          <i class="fas fa-water"></i>
+        </div>
+        <h3>Cambio de Temperatura</h3>
+        <p>Sumerge tu rostro en agua fría o coloca una compresa fría en la frente y ojos durante 30 segundos. Este estímulo activa el nervio vago y puede ayudar a reducir rápidamente estados de angustia intensa.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">
+          <i class="fas fa-pen-fancy"></i>
+        </div>
+        <h3>Expresión Escrita</h3>
+        <p>Escribe lo que estás sintiendo sin filtro ni juicio. Poner en palabras tus emociones puede ayudarte a procesarlas, crear distancia y obtener perspectiva sobre la situación que estás viviendo.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">
+          <i class="fas fa-walking"></i>
+        </div>
+        <h3>Actividad Física</h3>
+        <p>Realiza alguna actividad física como caminar, estirarte o bailar. El movimiento libera endorfinas y puede ayudar a reducir la intensidad de emociones difíciles mientras descargas la energía acumulada.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">
+          <i class="fas fa-phone-alt"></i>
+        </div>
+        <h3>Busca Apoyo</h3>
+        <p>No dudes en contactar a un profesional o a una línea de apoyo emocional si sientes que la crisis es abrumadora. Recuerda que pedir ayuda es un acto de valentía y autocuidado.</p>
+      </div>
+    </div>
+    <div style="text-align: center; margin-top: 40px;">
+      <a href="/recursos" class="btn btn-primary">Ver más recursos</a>
+    </div>
+  </div>
+</section>
+
+    <!-- Sección Testimonios -->
+    <section id="testimonios" class="testimonials">
+      <div class="container">
+        <div class="section-header">
+          <h2>Experiencias de nuestros pacientes</h2>
+          <p>Estas son algunas de las experiencias compartidas por personas que han encontrado apoyo y crecimiento en nuestras sesiones.</p>
+        </div>
+        <div class="testimonials-grid">
+          <div class="testimonial-card">
+            <div class="testimonial-header">
+              <img src="/api/placeholder/50/50" alt="Foto de cliente" class="testimonial-avatar">
+              <div class="testimonial-author">
+                <h4>Laura M.</h4>
+                <p>Paciente desde 2023</p>
+              </div>
+            </div>
+            <div class="testimonial-rating">
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+            </div>
+            <p class="testimonial-text">"El acompañamiento que me han brindado ha sido fundamental para superar momentos difíciles. Me han dado herramientas que uso diariamente y que han transformado mi vida."</p>
+          </div>
+          <div class="testimonial-card">
+            <div class="testimonial-header">
+              <img src="/api/placeholder/50/50" alt="Foto de cliente" class="testimonial-avatar">
+              <div class="testimonial-author">
+                <h4>Carlos R.</h4>
+                <p>Paciente desde 2022</p>
+              </div>
+            </div>
+            <div class="testimonial-rating">
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+            </div>
+            <p class="testimonial-text">"Gracias a las sesiones en COSFA, he podido entender mejor mis emociones y mejorar mis relaciones personales. El ambiente es acogedor y el enfoque profesional."</p>
+          </div>
+          <div class="testimonial-card">
+            <div class="testimonial-header">
+              <img src="/api/placeholder/50/50" alt="Foto de cliente" class="testimonial-avatar">
+              <div class="testimonial-author">
+                <h4>Ana P.</h4>
+                <p>Paciente desde 2021</p>
+              </div>
+            </div>
+            <div class="testimonial-rating">
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star-half-alt"></i>
+            </div>
+            <p class="testimonial-text">"La atención personalizada y el seguimiento constante han sido clave en mi proceso. Me siento escuchada y comprendida, lo que ha facilitado enormemente mi progreso."</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Sección Contacto -->
+    <section id="contacto" class="contact">
+      <div class="container">
+        <div class="section-header">
+          <h2>Contacto</h2>
+          <p>Estamos aquí para ayudarte. No dudes en ponerte en contacto con nosotros por cualquiera de estos medios.</p>
+        </div>
+        <div class="contact-grid">
+          <div class="contact-info">
+            <div class="contact-item">
+              <div class="contact-icon">
+                <i class="fas fa-envelope"></i>
+              </div>
+              <div class="contact-details">
+                <h3>Correo Electrónico</h3>
+                <p><a href="mailto:contacto@cosfa.com">contacto@cosfa.com</a></p>
+              </div>
+            </div>
+            <div class="contact-item">
+              <div class="contact-icon">
+                <i class="fas fa-phone"></i>
+              </div>
+              <div class="contact-details">
+                <h3>Teléfono</h3>
+                <p><a href="tel:+123456789">+12 345 6789</a></p>
+              </div>

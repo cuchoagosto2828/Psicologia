@@ -1,0 +1,190 @@
+{% extends "./base.html" %}
+
+{% block title %} Gestión de Intervenciones {% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <div class="row">
+        <!-- Mensajes de éxito -->
+        {% if messages %}
+            <div class="col-12">
+                {% for message in messages %}
+                <div class="alert alert-success alert-dismissible fade show d-flex align-items-center" role="alert">
+                    <i class="bi bi-check-circle-fill me-2"></i>
+                    <strong>{{ message }}</strong>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <!-- Encabezado y Botón de Nueva Intervención -->
+        <div class="col-12 d-flex justify-content-between align-items-center mb-3">
+            <h2 class="text-primary"><i class="bi bi-file-earmark-medical-fill"></i> Gestión de Intervenciones</h2>
+            <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modalRegistro">
+                <i class="bi bi-plus-circle"></i> Nueva Intervención
+            </button>
+        </div>
+
+        <!-- Tabla de Intervenciones -->
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>#</th>
+                                    <th>Estudiante</th>
+                                    <th>Historia Clínica</th>
+                                    <th>Tipo Intervención</th>
+                                    <th>Motivo</th>
+                                    <th>Fecha</th>
+                                    <th>Opciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for intervencion in intervenciones %}
+                                <tr>
+                                    <td>{{ forloop.counter }}</td>
+                                    <td>{{ intervencion.id_historia.id_estudiante.nombres }} {{ intervencion.id_historia.id_estudiante.apellidos }}</td>
+                                    <td>{{ intervencion.id_historia.id_historia }}</td>
+                                    <td>{{ intervencion.tipo_intervencion }}</td>
+                                    <td>{{ intervencion.fecha }}</td>
+                                    <td>{{ intervencion.motivoIn }}</td>
+                                    <td>
+                                        <a href="/edicionIntervencion/{{ intervencion.id_intervencion }}" class="btn btn-info">
+                                            <i class="fas fa-edit"></i> Editar
+                                        </a>
+                                        <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#modalEliminar{{ intervencion.id_intervencion }}">
+                                            <i class="fas fa-trash-alt"></i> Eliminar
+                                        </button>
+                                    </td>
+                                </tr>
+                            
+                                <!-- Modal de confirmación para eliminar -->
+                                <div class="modal fade" id="modalEliminar{{ intervencion.id_intervencion }}" tabindex="-1" aria-labelledby="modalEliminarLabel{{ intervencion.id_intervencion }}" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header bg-danger text-white">
+                                                <h5 class="modal-title" id="modalEliminarLabel{{ intervencion.id_intervencion }}">
+                                                    <i class="fas fa-exclamation-triangle"></i> Confirmar Eliminación
+                                                </h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                ¿Estás seguro de que deseas eliminar esta intervención?
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                                <form action="/eliminarIntervencion/{{ intervencion.id_intervencion }}/" method="POST">
+                                                    {% csrf_token %}
+                                                    <button type="submit" class="btn btn-danger">Eliminar</button>
+                                                </form>
+                                                
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </tbody>
+                            
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Registro -->
+<div class="modal fade {% if historias_estudiante or form_error %}show{% endif %}" id="modalRegistro" tabindex="-1" aria-labelledby="modalRegistroLabel" aria-hidden="true" {% if historias_estudiante or form_error %}style="display: block;"{% endif %}>
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="modalRegistroLabel">
+                    <i class="bi bi-plus-circle-fill"></i> Nueva Intervención
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+
+                <!-- Formulario para seleccionar estudiante -->
+                <form method="POST" action="{% url 'gestionIntervenciones' %}">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label class="form-label">Estudiante</label>
+                        <select name="estudiante_id" class="form-select" onchange="this.form.submit()" required>
+                            <option value="">Seleccionar estudiante...</option>
+                            {% for estudiante in estudiantes %}
+                            <option value="{{ estudiante.id }}" {% if estudiante.id|stringformat:"s" == request.POST.estudiante_id %}selected{% endif %}>
+                                {{ estudiante.nombres }} {{ estudiante.apellidos }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </form>
+
+                <!-- Formulario para registrar intervención -->
+                <form action="/registrarIntervencion/" method="POST" class="needs-validation mt-3" novalidate>
+                    {% csrf_token %}
+
+                    <div class="mb-3">
+                        <label class="form-label">Historia Clínica</label>
+                        <select name="id_historia" class="form-select" required {% if not historias_estudiante %}disabled{% endif %}>
+                            <option value="">{% if historias_estudiante %}Seleccione historia...{% else %}Primero elija un estudiante{% endif %}</option>
+                            {% for historia in historias_estudiante %}
+                            <option value="{{ historia.id_historia }}">HC-{{ historia.id_historia }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="tipo_intervencion" class="form-label">Tipo de intervención</label>
+                        <select id="tipo_intervencion" name="tipo_intervencion" class="form-select" required>
+                            {% for codigo, nombre in tipo_intervencion %}
+                            <option value="{{ codigo }}">{{ nombre }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <input type="datetime-local" name="fecha" class="form-control" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <textarea name="motivoIn" class="form-control" placeholder="Motivo de la intervención" required></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <textarea name="detalles" class="form-control" placeholder="Detalles de la intervención" required></textarea>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="bi bi-save"></i> Guardar Intervención
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Scripts de Bootstrap -->
+<script>
+    // Validación de formularios
+    (function () {
+        'use strict'
+        var forms = document.querySelectorAll('.needs-validation')
+        Array.prototype.slice.call(forms).forEach(function (form) {
+            form.addEventListener('submit', function (event) {
+                if (!form.checkValidity()) {
+                    event.preventDefault()
+                    event.stopPropagation()
+                }
+                form.classList.add('was-validated')
+            }, false)
+        })
+    })();
+</script>
+{% endblock %}
