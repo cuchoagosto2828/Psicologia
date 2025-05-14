@@ -36,7 +36,7 @@
                                     <tr>
                                         <th>#</th>
                                         <th>Estudiante</th>
-                                        <th>Fecha</th>
+                                        <th>Fecha de Inicio</th>
                                         <th>Motivo</th>
                                         <th>Opciones</th>
                                     </tr>
@@ -58,6 +58,9 @@
                                               <a href="{% url 'observaciones_cita' cita.id_cita %}" class="btn btn-secondary">
                                                 <i class="fas fa-notes-medical"></i> Observaciones
                                              </a>
+                                             <a href="{% url 'generar_pdf_observaciones' cita.id_cita %}" class="btn btn-outline-primary" target="_blank">
+                                                <i class="fas fa-file-pdf"></i> PDF
+                                            </a>
                                         </td>
                                     </tr>
                                 

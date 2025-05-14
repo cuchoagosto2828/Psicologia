@@ -62,6 +62,8 @@ urlpatterns = [
     path("eliminarCita/<int:id_cita>/", views.eliminarCita),
     path('observaciones/<int:id_cita>/', views.observaciones_cita, name='observaciones_cita'),
     path('observaciones/eliminar/<int:id_observacion>/', views.eliminar_observacion, name='eliminar_observacion'),
+    path('cita/<int:id_cita>/pdf/', views.generar_pdf_observaciones, name='generar_pdf_observaciones'),
+
 
 #Intervencion
     path("gestionIntervenciones/", views.gestionIntervenciones, name="gestionIntervenciones"),

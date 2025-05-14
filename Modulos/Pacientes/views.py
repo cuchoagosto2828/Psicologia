@@ -373,6 +373,7 @@ def registrarCita(request):
         id_estudiante = request.POST["id_estudiante"]
         fecha = request.POST["fecha"]
         motivo = request.POST["motivo"]
+         
 
         estudiante = get_object_or_404(Estudiantes, id_estudiante=id_estudiante)
 
@@ -404,11 +405,11 @@ def editarCita(request):
 
         id_estudiante = request.POST["id_estudiante"]
         fecha = request.POST["fecha"]
-        motivo = request.POST["motivo"]
+        motivo = request.POST["motivo"] 
 
         cita.id_estudiante = get_object_or_404(Estudiantes, id_estudiante=id_estudiante)
         cita.fecha = fecha
-        cita.motivo = motivo
+        cita.motivo = motivo 
         cita.save()
 
         messages.success(request, "Cita actualizada correctamente")
@@ -431,14 +432,21 @@ def observaciones_cita(request, id_cita):
 
     if request.method == 'POST':
         contenido = request.POST.get('observacion')
+        resumen = request.POST.get('resumen')
         obs_id = request.POST.get('obs_id')  # Para identificar si es edición
 
         if obs_id:
             observacion = get_object_or_404(Observacion, id=obs_id)
             observacion.contenido = contenido
+            observacion.resumen = resumen
             observacion.save()
         elif contenido:
-            Observacion.objects.create(cita=cita, contenido=contenido)
+            Observacion.objects.create(cita=cita, contenido=contenido, resumen=resumen,)
+        
+         # Guardar el resumen si se ha enviado
+        if resumen:
+            cita.resumen = resumen
+            cita.save()
 
         return redirect('observaciones_cita', id_cita=id_cita)
 
@@ -457,8 +465,30 @@ def eliminar_observacion(request, id_observacion):
     id_cita = observacion.cita.id_cita
     observacion.delete()
     return redirect('observaciones_cita', id_cita=id_cita)
+#generar pdf
+
+from django.http import HttpResponse
+from django.template.loader import get_template
+from xhtml2pdf import pisa
 
 
+def generar_pdf_observaciones(request, id_cita):
+    cita = get_object_or_404(Cita, id_cita=id_cita)
+    observaciones = Observacion.objects.filter(cita=cita).order_by('fecha_creacion')
+
+    template_path = 'pdf_observaciones.html'
+    context = {'cita': cita, 'observaciones': observaciones}
+
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="cita_{cita.id_cita}_observaciones.pdf"'
+
+    template = get_template(template_path)
+    html = template.render(context)
+
+    pisa_status = pisa.CreatePDF(html, dest=response)
+    if pisa_status.err:
+        return HttpResponse('Error al generar el PDF', status=500)
+    return response
 
 #--------------
 

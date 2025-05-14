@@ -13,10 +13,18 @@
                 <p><strong>Motivo:</strong> {{ cita.motivo }}</p>
             </div>
 
+
             <!-- Formulario para nueva observación -->
             <form method="POST" class="needs-validation" novalidate>
                 {% csrf_token %}
                 <input type="hidden" name="obs_id" id="obs_id">
+
+                <div class="mb-3">
+                    <label for="resumen" class="form-label"><strong>Resumen de la observación</strong></label>
+                    <textarea name="resumen" id="resumen" class="form-control" rows="3"></textarea>
+                    <div class="form-text">Puedes registrar o actualizar el resumen de esta observación aquí.</div>
+                </div>
+
                 <div class="mb-3">
                     <label for="observacion" class="form-label"><strong>Escribe o edita una observación</strong></label>
                     <textarea name="observacion" id="observacion" class="form-control" rows="5" required></textarea>
@@ -47,7 +55,9 @@
         </div>
         <div class="ms-2 d-flex gap-1">
             <button class="btn btn-sm btn-outline-primary btn-editar"
-                    data-id="{{ obs.id }}" data-contenido="{{ obs.contenido|escapejs }}">
+                data-id="{{ obs.id }}"
+                data-contenido="{{ obs.contenido|escapejs }}"
+                data-resumen="{{ obs.resumen|escapejs }}">
                 <i class="bi bi-pencil"></i>
             </button>
             <button class="btn btn-sm btn-danger btnEliminacion" data-bs-toggle="modal" data-bs-target="#modalEliminar{{ obs.id }}">
@@ -108,8 +118,10 @@
         document.querySelectorAll('.btn-editar').forEach(button => {
             button.addEventListener('click', function () {
                 const contenido = this.dataset.contenido;
+                const resumen = this.dataset.resumen;
                 const id = this.dataset.id;
                 document.getElementById('observacion').value = contenido;
+                document.getElementById('resumen').value = resumen;
                 document.getElementById('obs_id').value = id;
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             });

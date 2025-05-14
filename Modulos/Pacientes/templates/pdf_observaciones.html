@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body { font-family: "Helvetica", sans-serif; font-size: 12px; }
+        h2 { text-align: center; }
+        .obs { margin-bottom: 15px; border-bottom: 1px solid #ccc; padding-bottom: 10px; }
+        .resumen { font-style: italic; color: #333; }
+        .fecha { color: #666; font-size: 10px; }
+    </style>
+</head>
+<body>
+    <h2>Observaciones de la Cita</h2>
+    <p><strong>Estudiante:</strong> {{ cita.id_estudiante.nombres }} {{ cita.id_estudiante.apellidos }}</p>
+    <p><strong>Fecha de Inicio:</strong> {{ cita.fecha }}</p>
+    <p><strong>Motivo:</strong> {{ cita.motivo }}</p>
+    <hr>
+
+    {% for obs in observaciones %}
+        <div class="obs">
+            <p>Sección #{{ forloop.counter }}</p> 
+            <p class="fecha">{{ obs.fecha_creacion }}</p>
+            <p><strong>Resumen:</strong> <span class="resumen">{{ obs.resumen|default:"(Sin resumen)" }}</span></p>
+            
+        </div>
+    {% empty %}
+        <p>No hay observaciones registradas.</p>
+    {% endfor %}
+</body>
+</html>

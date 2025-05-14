@@ -130,6 +130,7 @@ class Cita(models.Model):
     fecha = models.DateTimeField()
     motivo = models.TextField()
     observaciones = models.TextField(blank=True, null=True)
+    
 
     def __str__(self):
         return f"Cita {self.id_cita} - {self.id_estudiante} el {self.fecha.strftime('%Y-%m-%d %H:%M')}"
@@ -139,6 +140,7 @@ class Observacion(models.Model):
     cita = models.ForeignKey(Cita, on_delete=models.CASCADE)
     contenido = models.TextField()
     fecha_creacion = models.DateTimeField(auto_now_add=True)
+    resumen = models.TextField(blank=True, null=True)
 
     def __str__(self):
         return f"Observación para Cita {self.cita.id_cita}"
