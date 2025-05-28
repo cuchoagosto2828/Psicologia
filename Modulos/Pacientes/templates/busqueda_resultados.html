@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block title %}Resultados de búsqueda{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+  <h2>Resultados para "{{ query }}"</h2>
+
+  {% if estudiantes %}
+    <h4 class="mt-4">Estudiantes</h4>
+    <ul>
+      {% for estudiante in estudiantes %}
+        <li>{{ estudiante.nombre }} - {{ estudiante.grado }}</li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+
+  {% if citas %}
+    <h4 class="mt-4">Citas</h4>
+    <ul>
+      {% for cita in citas %}
+        <li>{{ cita.fecha }} - {{ cita.motivo }}</li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+
+  {% if historias %}
+    <h4 class="mt-4">Historias Clínicas</h4>
+    <ul>
+      {% for historia in historias %}
+        <li>{{ historia.estudiante.nombre }} - {{ historia.observaciones|truncatewords:10 }}</li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+
+  {% if intervenciones %}
+    <h4 class="mt-4">Intervenciones</h4>
+    <ul>
+      {% for intervencion in intervenciones %}
+        <li>{{ intervencion.descripcion|truncatewords:10 }}</li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+
+  {% if not estudiantes and not citas and not historias and not intervenciones %}
+    <p>No se encontraron resultados.</p>
+  {% endif %}
+</div>
+{% endblock %}

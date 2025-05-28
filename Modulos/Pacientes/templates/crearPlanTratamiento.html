@@ -1,0 +1,49 @@
+{% extends "./base.html" %}
+{% load static %}
+
+
+{% block title %} Nuevo Plan de Tratamiento {% endblock %}
+{% block body %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-7">
+            <h2 class="text-center mb-4">Nuevo Plan de Tratamiento</h2>
+            <div class="card shadow-sm card-light-purple-border">
+                <div class="card-body">
+                    <form method="POST" class="needs-validation" novalidate>
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label class="form-label label-morado">Objetivo</label>
+                            <input type="text" name="objetivo" class="form-control form-control-purple" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label label-morado">Detalles</label>
+                            <textarea name="detalles" class="form-control form-control-purple"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label label-morado">Fecha de inicio</label>
+                            <input type="datetime-local" name="fecha_inicio" class="form-control form-control-purple" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label label-morado">Fecha de revisión</label>
+                            <input type="datetime-local" name="fecha_revision" class="form-control form-control-purple">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label label-morado">Frecuencia</label>
+                            <input type="text" name="frecuencia" class="form-control form-control-purple" placeholder="Ej: semanal, mensual">
+                        </div>
+                        <button type="submit" class="btn btn-purple w-100 mb-2">
+                            <i class="bi bi-save"></i> Guardar Plan
+                        </button>
+                        <a href="{% url 'gestionDiagnostico' %}" class="btn btn-secondary w-100">
+                            <i class="bi bi-arrow-left"></i> Volver
+                        </a>
+                        
+                    </form>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

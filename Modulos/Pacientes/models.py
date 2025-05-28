@@ -80,33 +80,27 @@ class Estudiantes(models.Model):
 class HistoriaClinica(models.Model):
     id_historia = models.AutoField(primary_key=True)
     id_estudiante = models.ForeignKey('Estudiantes', on_delete=models.CASCADE, related_name='historias_clinicas')
+
+    # Solo una vez, no repetir fecha_creacion
     fecha_creacion = models.DateTimeField(auto_now_add=True)
 
-    # Profesional que crea la historia
     profesional = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
-
-    # Información clínica
     motivo_consulta = models.TextField(null=True, blank=True)
     antecedentes_personales = models.TextField(null=True, blank=True)
     antecedentes_familiares = models.TextField(null=True, blank=True)
     evaluacion_psicologica = models.TextField(null=True, blank=True)
     estado_actual = models.CharField(max_length=255, null=True, blank=True)
     observaciones = models.TextField(null=True, blank=True)
-    fecha_creacion = models.DateTimeField()
-
-    # Diagnóstico y tratamiento
     id_diagnostico = models.ForeignKey('Diagnostico', on_delete=models.CASCADE)
     plan_tratamiento = models.ForeignKey('PlanTratamiento', on_delete=models.CASCADE, null=True, blank=True)
     intervenciones = models.ManyToManyField('Intervencion', blank=True)
-
-    # PIAR
     PIAR = models.TextField(null=True, blank=True)
     detalles_PIAR = models.TextField(null=True, blank=True)
-
     recomendaciones = models.TextField(null=True, blank=True)
 
     def __str__(self):
         return f"Historia {self.id_historia} - {self.id_estudiante}"
+
 
 
 class PlanTratamiento(models.Model):
@@ -166,4 +160,19 @@ class Intervencion(models.Model):
 
     def __str__(self):
         return f"Intervención {self.id_intervencion} - {self.tipo_intervencion} ({self.fecha.strftime('%Y-%m-%d')})"
+
+class Testimonio(models.Model):
+    nombre = models.CharField(max_length=100)
+    fecha = models.DateField(auto_now_add=True)
+    contenido = models.TextField()
+    calificacion = models.IntegerField(default=5)  # de 1 a 5 estrellas
+
+    def __str__(self):
+        return f"{self.nombre} - {self.fecha}"
+
+class SeguimientoPlan(models.Model):
+    plan = models.ForeignKey(PlanTratamiento, on_delete=models.CASCADE, related_name='seguimientos')
+    fecha = models.DateTimeField(auto_now_add=True)
+    avance = models.TextField()
+    observaciones = models.TextField(blank=True, null=True)
 

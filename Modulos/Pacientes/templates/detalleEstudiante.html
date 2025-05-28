@@ -35,11 +35,12 @@
     <h3 class="mt-4 text-primary"><i class="bi bi-calendar-check"></i> Citas Registradas</h3>
     {% if citas %}
     <ul class="list-group">
-        {% for cita in citas %}
-        <li class="list-group-item">
-            <strong>Fecha:</strong> {{ cita.fecha|date:"d/m/Y H:i" }} - <strong>Motivo:</strong> {{ cita.motivo }}
-        </li>
-        {% endfor %}
+    {% for cita in citas %}
+    <a href="{% url 'observaciones_cita' cita.id_cita %}" class="list-group-item list-group-item-action">
+        <strong>Fecha:</strong> {{ cita.fecha|date:"d/m/Y H:i" }} - <strong>Motivo:</strong> {{ cita.motivo }}
+    </a>
+    {% endfor %}
+
     </ul>
     {% else %}
     <p>No hay citas registradas.</p>
@@ -53,9 +54,11 @@
     <h3 class="mt-4 text-primary"><i class="bi bi-clipboard-pulse"></i> Intervenciones</h3>
     <ul class="list-group">
         {% for intervencion in intervenciones %}
-        <li class="list-group-item">
-            <strong>Fecha:</strong> {{ intervencion.fecha|date:"d/m/Y" }} - <strong>Tipo:</strong> {{ intervencion.tipo_intervencion }} - <strong>Detalles:</strong> {{ intervencion.detalles }}
-        </li>
+        <a href="{% url 'edicionIntervencion' intervencion.id_intervencion %}" class="list-group-item list-group-item-action">
+            <strong>Fecha:</strong> {{ intervencion.fecha|date:"d/m/Y" }} - 
+            <strong>Tipo:</strong> {{ intervencion.tipo_intervencion }} - 
+            <strong>Detalles:</strong> {{ intervencion.detalles|default:"Sin detalles" }}
+        </a>
         {% endfor %}
     </ul>
     {% else %}

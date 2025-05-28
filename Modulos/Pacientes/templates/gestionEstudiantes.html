@@ -1,6 +1,17 @@
 {% extends "./base.html" %}
+{% load static %}
 
-{% block title %} Gestión de Estudiantes {% endblock %}
+
+{% block head %}
+    {{ block.super }}
+    <link rel="stylesheet" href="{% static 'css/gestiones.css' %}">
+{% endblock %}
+
+{% block title %} Gestión de Estudiantes - Psicología {% endblock %}
+
+{% block css %}
+
+{% endblock %}
 
 {% block body %}
 <div class="container mt-4">
@@ -9,7 +20,7 @@
         {% if messages %}
             <div class="col-12">
                 {% for message in messages %}
-                <div class="alert alert-success alert-dismissible fade show d-flex align-items-center" role="alert">
+                <div class="alert alert-success alert-dismissible fade show d-flex align-items-center" role="alert" style="background-color: #e6d9f2; color: #4a235a; border-color: #9b59b6;">
                     <i class="bi bi-check-circle-fill me-2"></i>
                     <strong>{{ message }}</strong>
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
@@ -18,21 +29,27 @@
             </div>
         {% endif %}
 
-        <!-- Encabezado y Botón de Nuevo Estudiante -->
-        <div class="col-12 d-flex justify-content-between align-items-center mb-3">
-            <h2 class="text-primary"><i class="bi bi-person-lines-fill"></i> Gestión de Estudiantes</h2>
-            <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modalRegistro">
-                <i class="bi bi-plus-circle"></i> Nuevo Estudiante
-            </button>
+        <!-- Encabezado con estilo morado -->
+        <div class="col-12 mb-4">
+            <div class="card shadow-sm card-purple-border">
+                <div class="card-body card-header-gradient">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h2 class="text-white m-0"><i class="bi bi-person-lines-fill me-2"></i> Gestión de Estudiantes</h2>
+                        <button class="btn btn-white-purple" data-bs-toggle="modal" data-bs-target="#modalRegistro">
+                            <i class="bi bi-plus-circle me-1"></i> Nuevo Estudiante
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- Tabla de Estudiantes -->
         <div class="col-12">
-            <div class="card shadow-sm">
+            <div class="card shadow-sm card-light-purple-border">
                 <div class="card-body">
                     <div class="table-responsive">
                         <table class="table table-hover">
-                            <thead class="table-dark">
+                            <thead class="btn-purple">
                                 <tr>
                                     <th>Código</th>
                                     <th>Documento</th>
@@ -55,67 +72,44 @@
                                     <td>{{ e.grado }}</td>
                                     <td>{{ e.id_diagnostico.diagnostico|default:"Sin diagnóstico" }}</td>
                                     <td>
-                                        <a href="/detalleEstudiante/{{ e.id_estudiante }}" class="btn btn-primary">
+                                        <a href="/detalleEstudiante/{{ e.id_estudiante }}" class="btn btn-sm btn-purple">
                                             <i class="bi bi-eye-fill"></i>                   
                                         </a>
-                                        <a href="/edicionEstudiante/{{ e.id_estudiante }}" class="btn btn-info">
+                                        <a href="/edicionEstudiante/{{ e.id_estudiante }}" class="btn btn-sm" style="background-color: #7e57c2; color: white;">
                                             <i class="bi bi-pencil-square"></i> 
                                         </a>
-                                        <button class="btn btn-danger btnEliminacion" data-bs-toggle="modal" data-bs-target="#modalEliminar{{ e.id_estudiante }}">
+                                        <button class="btn btn-sm btn-danger-pink btnEliminacion" data-bs-toggle="modal" data-bs-target="#modalEliminar{{ e.id_estudiante }}">
                                             <i class="bi bi-trash3-fill"></i> 
                                         </button>
-                                        <a href="/edicionEstudiante/{{ e.id_estudiante }}" class="btn btn-warning">
-                                            <i class="bi bi-journals"></i>
-                                        </a> 
                                     </td>
-                                    
-                                    <!-- Modal de Confirmación para Eliminar -->
-                                    <div class="modal fade" id="modalEliminar{{ e.id_estudiante }}" tabindex="-1" aria-labelledby="modalEliminarLabel{{ e.id_estudiante }}" aria-hidden="true">
-                                        <div class="modal-dialog">
-                                            <div class="modal-content">
-                                                <div class="modal-header bg-danger text-white">
-                                                    <h5 class="modal-title" id="modalEliminarLabel{{ e.id_estudiante }}">
-                                                        <i class="fas fa-exclamation-triangle"></i> Confirmar Eliminación
-                                                    </h5>
-                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-                                                </div>
-                                                <div class="modal-body">
-                                                    ¿Estás seguro de que quieres eliminar al estudiante <strong>#{{ e.id_estudiante }}</strong>? Esta acción no se puede deshacer.
-                                                </div>
-                                                <div class="modal-footer">
-                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                                                    <a href="/eliminarEstudiante/{{ e.id_estudiante }}" class="btn btn-danger">
-                                                        <i class="fas fa-trash-alt"></i> Sí, Eliminar
-                                                    </a>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    
                                 </tr>
 
                                 <!-- Modal de Confirmación para Eliminar -->
                                 <div class="modal fade" id="modalEliminar{{ e.id_estudiante }}" tabindex="-1" aria-labelledby="modalEliminarLabel{{ e.id_estudiante }}" aria-hidden="true">
                                     <div class="modal-dialog">
-                                        <div class="modal-content">
-                                            <div class="modal-header bg-danger text-white">
+                                        <div class="modal-content modal-content-rounded-small">
+                                            <div class="modal-header btn-purple-dark">
                                                 <h5 class="modal-title" id="modalEliminarLabel{{ e.id_estudiante }}">
-                                                    <i class="fas fa-exclamation-triangle"></i> Confirmar Eliminación
+                                                    <i class="bi bi-exclamation-triangle-fill me-2"></i> Confirmar Eliminación
                                                 </h5>
-                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                                             </div>
                                             <div class="modal-body">
                                                 ¿Estás seguro de que quieres eliminar al estudiante <strong>#{{ e.id_estudiante }}</strong>? Esta acción no se puede deshacer.
                                             </div>
                                             <div class="modal-footer">
-                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                                                <a href="/eliminarEstudiante/{{ e.id_estudiante }}" class="btn btn-danger">
-                                                    <i class="fas fa-trash-alt"></i> Sí, Eliminar
+                                                <button type="button" class="btn btn-purple-light" data-bs-dismiss="modal">Cancelar</button>
+                                                <a href="/eliminarEstudiante/{{ e.id_estudiante }}" class="btn btn-danger-pink">
+                                                    <i class="bi bi-trash3-fill me-1"></i> Sí, Eliminar
                                                 </a>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="8">No se encontraron resultados.</td>
+                                </tr>
                                 {% endfor %}
                             </tbody>
                         </table>
@@ -128,94 +122,107 @@
 
 <!-- Modal de Registro -->
 <div class="modal fade" id="modalRegistro" tabindex="-1" aria-labelledby="modalRegistroLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header bg-primary text-white">
-                <h5 class="modal-title" id="modalRegistroLabel"><i class="bi bi-person-plus-fill"></i> Nuevo Estudiante</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content modal-content-rounded">
+            <div class="modal-header card-header-gradient">
+                <h5 class="modal-title" id="modalRegistroLabel"><i class="bi bi-person-plus-fill me-2"></i> Nuevo Estudiante</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body">
+            <div class="modal-body" style="background-color: #f9f5fd;">
                 <form action="/registrarEstudiante/" method="POST" class="needs-validation" novalidate>
                     {% csrf_token %}
-                    <div class="mb-3">
-                        <label for="txtIdEstudiante" class="form-label">ID del estudiante</label>
-                        <input type="text" id="txtIdEstudiante" name="txtIdEstudiante" class="form-control" placeholder="ID del estudiante" required>
-                    </div>
-                    <div class="mb-3">
-                        <input type="text" id="txtDocumento" name="txtDocumento" class="form-control" placeholder="Documento del estudiante" maxlength="10" required>
-                    </div>
-                    <div class="mb-3">
-                        <input type="text" id="txtNombres" name="txtNombres" class="form-control" placeholder="Nombres del estudiante" maxlength="50" required>
-                    </div>
-                    <div class="mb-3">
-                        <input type="text" id="txtApellidos" name="txtApellidos" class="form-control" placeholder="Apellidos del estudiante" maxlength="50" required>
-                    </div>
-                    <div class="mb-3">
-                        <input type="number" id="txtEdad" name="txtEdad" class="form-control" placeholder="Edad del estudiante" min="1" max="99" required>
-                    </div>
-                    <div class="mb-3">
-                        <input type="text" id="txtDireccion" name="txtDireccion" class="form-control" placeholder="Dirección del estudiante" min="1" max="99" required>
-                    </div>
-                    <div class="mb-3">
-                        <input type="text" id="txtEmail" name="txtEmail" class="form-control" placeholder="Email del estudiante" min="1" max="99" required>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5 class="mb-3 titulo-morado"><i class="bi bi-person-vcard me-2"></i>Datos del Estudiante</h5>
+
+                            <div class="mb-3">
+                                <label for="txtIdEstudiante" class="form-label label-morado">ID del estudiante</label>
+                                <input type="text" id="txtIdEstudiante" name="txtIdEstudiante" class="form-control form-control-purple" placeholder="ID del estudiante" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="txtDocumento" class="form-label label-morado">Documento</label>
+                                <input type="text" id="txtDocumento" name="txtDocumento" class="form-control form-control-purple" placeholder="Documento del estudiante" maxlength="10" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="txtNombres" class="form-label label-morado">Nombres</label>
+                                <input type="text" id="txtNombres" name="txtNombres" class="form-control form-control-purple" placeholder="Nombres del estudiante" maxlength="50" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="txtApellidos" class="form-label label-morado">Apellidos</label>
+                                <input type="text" id="txtApellidos" name="txtApellidos" class="form-control form-control-purple" placeholder="Apellidos del estudiante" maxlength="50" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="txtEdad" class="form-label label-morado">Edad</label>
+                                <input type="number" id="txtEdad" name="txtEdad" class="form-control form-control-purple" placeholder="Edad del estudiante" min="1" max="99" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="txtDireccion" class="form-label label-morado">Dirección</label>
+                                <input type="text" id="txtDireccion" name="txtDireccion" class="form-control form-control-purple" placeholder="Dirección del estudiante" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="txtEmail" class="form-label label-morado">Email</label>
+                                <input type="email" id="txtEmail" name="txtEmail" class="form-control form-control-purple" placeholder="Email del estudiante" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="txtGrado" class="form-label label-morado">Grado</label>
+                                <select id="txtGrado" name="txtGrado" class="form-select form-control-purple">
+                                    {% for codigo, nombre in grados %}
+                                        <option value="{{ codigo }}">{{ nombre }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="txtIdDiagnostico" class="form-label label-morado">Diagnóstico</label>
+                                <select id="txtIdDiagnostico" name="txtIdDiagnostico" class="form-select form-control-purple">
+                                    <option value="">Sin diagnóstico</option>
+                                    {% for trastorno in trastornos %}
+                                        <option value="{{ trastorno.id_trastorno }}">{{ trastorno.nombre }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <h5 class="mb-3 titulo-morado"><i class="bi bi-people-fill me-2"></i>Datos del Acudiente</h5>
+
+                            <div class="mb-3">
+                                <label for="txtnombreAcudiente" class="form-label label-morado">Nombres del acudiente</label>
+                                <input type="text" id="txtnombreAcudiente" name="txtnombreAcudiente" class="form-control form-control-purple" placeholder="Nombres del acudiente" maxlength="50" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="txttelefonoAcudiente" class="form-label label-morado">Teléfono del acudiente</label>
+                                <input type="tel" id="txttelefonoAcudiente" name="txttelefonoAcudiente" class="form-control form-control-purple" placeholder="Teléfono del acudiente" maxlength="10" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="txtdireccionAcudiente" class="form-label label-morado">Dirección del acudiente</label>
+                                <input type="text" id="txtdireccionAcudiente" name="txtdireccionAcudiente" class="form-control form-control-purple" placeholder="Dirección del acudiente" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="txtparentescoAcudiente" class="form-label label-morado">Parentesco</label>
+                                <input type="text" id="txtparentescoAcudiente" name="txtparentescoAcudiente" class="form-control form-control-purple" placeholder="Parentesco con el estudiante" maxlength="30" required>
+                            </div>
+                        </div>
                     </div>
 
-                    <div class="mb-3">   
-                        <label for="txtGrado" class="form-label">Grado del estudiante</label>
-                        <select id="txtGrado" name="txtGrado" class="form-select">
-                            {% for codigo, nombre in grados %}
-                                <option value="{{ codigo }}">{{ nombre }}</option>
-                            {% endfor %}
-                        </select>
+                    <div class="d-flex justify-content-end mt-3">
+                        <button type="submit" class="btn btn-purple">Registrar Estudiante</button>
                     </div>
-                    <div class="mb-3">
-                        <label for="txtIdDiagnostico" class="form-label">Diagnóstico</label>
-                        <select id="txtIdDiagnostico" name="txtIdDiagnostico" class="form-select">
-                            <option value="">Sin diagnóstico</option> <!-- Opción para no asignar trastorno -->
-                            {% for trastorno in trastornos %}
-                                <option value="{{ trastorno.id_trastorno }}">{{ trastorno.nombre }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>                    
-                    <div class="mb-3">
-                        <input type="text" id="txtnombreAcudiente" name="txtnombreAcudiente" class="form-control" placeholder="Nombres del acudiente" min="1" max="99" required>
-                    </div>
-                    <div class="mb-3">
-                        <input type="text" id="txtapellidoAcudiente" name="txtapellidoAcudiente" class="form-control" placeholder="Apellidos del acudiente" min="1" max="99" required>
-                    </div>
-                    <div class="mb-3">
-                        <input type="text" id="txtdocumentoAcu" name="txtdocumentoAcu" class="form-control" placeholder="Documento del acudiente" min="1" max="99" required>
-                    </div>
-                    <div class="mb-3">
-                        <input type="text" id="txtTelefonoAcu" name="txtTelefonoAcu" class="form-control" placeholder="Teléfono del acudiente" min="1" max="99" required>
-                    </div>
-                    <div class="mb-3">
-                        <input type="text" id="txtEmailAcu" name="txtEmailAcu" class="form-control" placeholder="Email del acudiente" min="1" max="99" required>
-                    </div>
-                    <button type="submit" class="btn btn-primary w-100">
-                        <i class="bi bi-save"></i> Guardar Estudiante
-                    </button>
                 </form>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Scripts de Bootstrap -->
-<script>
-    // Validación de formularios
-    (function () {
-        'use strict'
-        var forms = document.querySelectorAll('.needs-validation')
-        Array.prototype.slice.call(forms).forEach(function (form) {
-            form.addEventListener('submit', function (event) {
-                if (!form.checkValidity()) {
-                    event.preventDefault()
-                    event.stopPropagation()
-                }
-                form.classList.add('was-validated')
-            }, false)
-        })
-    })();
-</script>
 {% endblock %}

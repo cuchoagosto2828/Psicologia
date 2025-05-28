@@ -1,4 +1,10 @@
 {% extends "./base.html" %}
+{% load static %}
+
+{% block head %}
+    {{ block.super }}
+    <link rel="stylesheet" href="{% static 'css/gestiones.css' %}">
+{% endblock %}
 
 {% block title %} Gestión de Diagnósticos {% endblock %}
 
@@ -9,7 +15,7 @@
         {% if messages %}
             <div class="col-12">
                 {% for message in messages %}
-                <div class="alert alert-success alert-dismissible fade show d-flex align-items-center" role="alert">
+                <div class="alert alert-success alert-dismissible fade show d-flex align-items-center" role="alert" style="background-color: #e6d9f2; color: #4a235a; border-color: #9b59b6;">
                     <i class="bi bi-check-circle-fill me-2"></i>
                     <strong>{{ message }}</strong>
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
@@ -18,27 +24,35 @@
             </div>
         {% endif %}
 
-        <!-- Encabezado y Botón de Nuevo Diagnóstico -->
-        <div class="col-12 d-flex justify-content-between align-items-center mb-3">
-            <h2 class="text-primary"><i class="bi bi-clipboard-plus"></i> Gestión de Diagnósticos</h2>
-            <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modalRegistro">
-                <i class="bi bi-plus-circle"></i> Nuevo Diagnóstico
-            </button>
+        <!-- Encabezado con estilo morado -->
+        <div class="col-12 mb-4">
+            <div class="card shadow-sm card-purple-border">
+                <div class="card-body card-header-gradient">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h2 class="text-white m-0"><i class="bi bi-clipboard-plus me-2"></i> Gestión de Diagnósticos</h2>
+                        <button class="btn btn-white-purple" data-bs-toggle="modal" data-bs-target="#modalRegistro">
+                            <i class="bi bi-plus-circle me-1"></i> Nuevo Diagnóstico
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- Tabla de Diagnósticos -->
         <div class="col-12">
-            <div class="card shadow-sm">
+            <div class="card shadow-sm card-light-purple-border">
                 <div class="card-body">
                     <div class="table-responsive">
                         <table class="table table-hover">
-                            <thead class="table-dark">
+                            <thead class="btn-purple">
                                 <tr>
                                     <th>ID</th>
+                                    <th>Estudiante</th>
                                     <th>Diagnóstico</th>
                                     <th>Nivel</th>
+                                    <th>Trastorno</th>
                                     <th>Intervención</th>
-                                    <th>Diagnóstico</th>
+                                    <th>Plan de Tratamiento</th>
                                     <th>Opciones</th>
                                 </tr>
                             </thead>
@@ -46,83 +60,56 @@
                                 {% for diagnostico in diagnosticos %}
                                 <tr>
                                     <td>{{ diagnostico.id_diagnostico }}</td>
+                                    <td>{{ diagnostico.id_estudiante.nombres }} {{ diagnostico.id_estudiante.apellidos }}</td>
                                     <td>{{ diagnostico.diagnostico }}</td>
                                     <td>{{ diagnostico.nivel }}</td>
                                     <td>{{ diagnostico.trastorno.nombre|default:"Sin diagnóstico" }}</td>
                                     <td>{{ diagnostico.requiereInter }}</td>
                                     <td>
-                                        <a href="/edicionDiagnostico/{{ diagnostico.id_diagnostico }}" class="btn btn-info">
-                                            <i class="fas fa-edit"></i> Editar
+                                        {% if diagnostico.plan %}
+                                            {{ diagnostico.plan.objetivo }}
+                                            <a href="{% url 'detallePlanTratamiento' diagnostico.plan.id_plan %}" class="btn btn-sm btn-outline-primary ms-2">
+                                                <i class="bi bi-eye"></i> Ver
+                                            </a>
+                                        {% else %}
+                                            <span class="text-muted">Sin plan</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <a href="/edicionDiagnostico/{{ diagnostico.id_diagnostico }}" class="btn btn-sm btn-purple">
+                                            <i class="bi bi-pencil-square"></i> Editar
                                         </a>
-                                        
-                                        <button class="btn btn-danger btnEliminacion" data-bs-toggle="modal" data-bs-target="#modalEliminar{{ diagnostico.id_diagnostico }}">
-                                            <i class="fas fa-trash-alt"></i> Eliminar
+                                        <a href="{% url 'crearPlanTratamiento' diagnostico.id_diagnostico %}" class="btn btn-sm btn-success">
+                                            <i class="bi bi-journal-plus"></i> Plan Tratamiento
+                                        </a>
+                                        <button class="btn btn-sm btn-danger-pink btnEliminacion" data-bs-toggle="modal" data-bs-target="#modalEliminar{{ diagnostico.id_diagnostico }}">
+                                            <i class="bi bi-trash3-fill"></i> Eliminar
                                         </button>
                                     </td>
-                                    
-                                    <!-- Modal de Confirmación para Eliminar -->
-                                    <div class="modal fade" id="modalEliminar{{ diagnostico.id_diagnostico }}" tabindex="-1" aria-labelledby="modalEliminarLabel{{ diagnostico.id_diagnostico }}" aria-hidden="true">
-                                        <div class="modal-dialog">
-                                            <div class="modal-content">
-                                                <div class="modal-header bg-danger text-white">
-                                                    <h5 class="modal-title" id="modalEliminarLabel{{ diagnostico.id_diagnostico }}"><i class="bi bi-exclamation-triangle-fill"></i> Confirmar Eliminación</h5>
-                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                </div>
-                                                <div class="modal-body">
-                                                    ¿Estás seguro de que deseas eliminar el diagnóstico "<strong>{{ diagnostico.diagnostico }}</strong>"? Esta acción no se puede deshacer.
-                                                </div>
-                                                <div class="modal-footer">
-                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                                                    <a href="/eliminarDiagnostico/{{ diagnostico.id_diagnostico }}" class="btn btn-danger">
-                                                        <i class="fas fa-trash-alt"></i> Sí, Eliminar
-                                                    </a>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    
-                                    <!-- Modal de Confirmación para Eliminar -->
-                                    <div class="modal fade" id="modalEliminar{{ estudiante.id_estudiante }}" tabindex="-1" aria-labelledby="modalEliminarLabel{{ estudiante.id_estudiante }}" aria-hidden="true">
-                                        <div class="modal-dialog">
-                                            <div class="modal-content">
-                                                <div class="modal-header bg-danger text-white">
-                                                    <h5 class="modal-title" id="modalEliminarLabel{{ estudiante.id_estudiante }}"><i class="fas fa-exclamation-triangle"></i> Confirmar Eliminación</h5>
-                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-                                                </div>
-                                                <div class="modal-body">
-                                                    ¿Estás seguro de que quieres eliminar al estudiante <strong>{{ estudiante.nombres }} {{ estudiante.apellidos }}</strong>? Esta acción no se puede deshacer.
-                                                </div>
-                                                <div class="modal-footer">
-                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                                                    <a href="/eliminarEstudiante/{{ estudiante.id_estudiante }}" class="btn btn-danger">
-                                                        <i class="fas fa-trash-alt"></i> Sí, Eliminar
-                                                    </a>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    
                                 </tr>
 
-                                <!-- Modal de Confirmación de Eliminación -->
-                                <div class="modal fade" id="modalEliminar{{ diagnostico.id_diagnostico }}" tabindex="-1" aria-labelledby="modalEliminarLabel" aria-hidden="true">
+                                <!-- Modal de Confirmación para Eliminar -->
+                                <div class="modal fade" id="modalEliminar{{ diagnostico.id_diagnostico }}" tabindex="-1" aria-labelledby="modalEliminarLabel{{ diagnostico.id_diagnostico }}" aria-hidden="true">
                                     <div class="modal-dialog">
-                                        <div class="modal-content">
-                                            <div class="modal-header bg-danger text-white">
-                                                <h5 class="modal-title" id="modalEliminarLabel"><i class="bi bi-exclamation-triangle-fill"></i> Confirmar Eliminación</h5>
-                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        <div class="modal-content modal-content-rounded-small">
+                                            <div class="modal-header btn-purple-dark">
+                                                <h5 class="modal-title text-white" id="modalEliminarLabel{{ diagnostico.id_diagnostico }}">
+                                                    <i class="bi bi-exclamation-triangle-fill me-2"></i> Confirmar Eliminación
+                                                </h5>
+                                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                                             </div>
                                             <div class="modal-body">
                                                 ¿Estás seguro de que deseas eliminar el diagnóstico "<strong>{{ diagnostico.diagnostico }}</strong>"? Esta acción no se puede deshacer.
                                             </div>
                                             <div class="modal-footer">
-                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                                                <a href="/eliminarDiagnostico/{{ diagnostico.id_diagnostico }}" class="btn btn-danger">Eliminar</a>
+                                                <button type="button" class="btn btn-purple-light" data-bs-dismiss="modal">Cancelar</button>
+                                                <a href="/eliminarDiagnostico/{{ diagnostico.id_diagnostico }}" class="btn btn-danger-pink">
+                                                    <i class="bi bi-trash3-fill me-1"></i> Sí, Eliminar
+                                                </a>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-
                                 {% endfor %}
                             </tbody>
                         </table>
@@ -136,17 +123,17 @@
 <!-- Modal de Registro -->
 <div class="modal fade" id="modalRegistro" tabindex="-1" aria-labelledby="modalRegistroLabel" aria-hidden="true">
     <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header bg-primary text-white">
-                <h5 class="modal-title" id="modalRegistroLabel"><i class="bi bi-clipboard-plus"></i> Nuevo Diagnóstico</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="modal-content modal-content-rounded">
+            <div class="modal-header card-header-gradient">
+                <h5 class="modal-title text-white" id="modalRegistroLabel"><i class="bi bi-clipboard-plus me-2"></i> Nuevo Diagnóstico</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body">
+            <div class="modal-body" style="background-color: #f9f5fd;">
                 <form action="/registrarDiagnostico/" method="POST" class="needs-validation" novalidate>
                     {% csrf_token %}
                     <div class="mb-3">
-                        <label for="estudiante">Estudiante</label>
-                        <select id="estudiante" name="id_estudiante" class="form-control" required>
+                        <label for="estudiante" class="form-label label-morado">Estudiante</label>
+                        <select id="estudiante" name="id_estudiante" class="form-select form-control-purple" required>
                             <option value="" disabled selected>Seleccione un estudiante</option>
                             {% for estudiante in Estudiantes %}
                             <option value="{{ estudiante.id_estudiante }}">{{ estudiante.nombres }} {{ estudiante.apellidos }}</option>
@@ -154,22 +141,21 @@
                         </select>                                               
                     </div>
                     <div class="mb-3">
-                        <label for="txtTrastorno" class="form-label">Diagnóstico predeterminado</label>
-                        <select id="txtTrastorno" name="txtTrastorno" class="form-select">
-                            <option value="">Sin diagnóstico</option> <!-- Permitir que no tenga uno -->
+                        <label for="txtTrastorno" class="form-label label-morado">Diagnóstico predeterminado</label>
+                        <select id="txtTrastorno" name="txtTrastorno" class="form-select form-control-purple">
+                            <option value="">Sin diagnóstico</option>
                             {% for trastorno in trastornos %}
                                 <option value="{{ trastorno.id_trastorno }}">{{ trastorno.nombre }}</option>
                             {% endfor %}
                         </select>
                     </div>            
                     <div class="mb-3">
-                        <label for="txtDiagnostico" class="form-label">Nombre del Diagnóstico</label>
-                        <input type="text" id="txtDiagnostico" name="txtDiagnostico" class="form-control" required>
+                        <label for="txtDiagnostico" class="form-label label-morado">Nombre del Diagnóstico</label>
+                        <input type="text" id="txtDiagnostico" name="txtDiagnostico" class="form-control form-control-purple" required>
                     </div>
-                            
                     <div class="mb-3">
-                        <label for="txtNivel">Nivel de gravedad/urgencia</label>
-                        <select id="txtNivel" name="txtNivel" class="form-control" required>
+                        <label for="txtNivel" class="form-label label-morado">Nivel de gravedad/urgencia</label>
+                        <select id="txtNivel" name="txtNivel" class="form-select form-control-purple" required>
                             <option value="" disabled selected>Seleccione un nivel</option>
                             <option value="Leve">Leve</option>
                             <option value="Moderado">Moderado</option>
@@ -177,34 +163,28 @@
                             <option value="Muy grave">Muy grave</option>
                         </select>
                     </div>
-
                     <div class="mb-3">
-                        <label for="requiereInter" class="form-label fw-bold text-dark">¿Requiere intervención?</label>
-                        <select id="requiereInter" name="requiereInter" class="form-control" required onchange="toggleIntervencion()">
+                        <label for="requiereInter" class="form-label label-morado fw-bold text-dark">¿Requiere intervención?</label>
+                        <select id="requiereInter" name="requiereInter" class="form-select form-control-purple" required onchange="toggleIntervencion()">
                             <option value="No">No</option>
                             <option value="Sí">Sí</option>
                         </select>
                     </div>
-                    
                     <div id="intervencionFields" style="display: none;">
                         <div class="mb-3">
-                            <label for="fechaInter" class="form-label fw-bold text-dark">Fecha de Intervención</label>
-                            <input type="datetime-local" id="fechaInter" name="fechaInter" class="form-control">
+                            <label for="fechaInter" class="form-label label-morado fw-bold text-dark">Fecha de Intervención</label>
+                            <input type="datetime-local" id="fechaInter" name="fechaInter" class="form-control form-control-purple">
                         </div>
                         <div class="mb-3">
-                            <label for="detalleInter" class="form-label fw-bold text-dark">Detalles de la Intervención</label>
-                            <input type="text" id="detalleInter" name="detalleInter" class="form-control">
+                            <label for="detalleInter" class="form-label label-morado fw-bold text-dark">Detalles de la Intervención</label>
+                            <input type="text" id="detalleInter" name="detalleInter" class="form-control form-control-purple">
                         </div>
                     </div>
                     <div class="mb-3">
-                        <label for="txtNivel">Observaciones</label>
-                        <input type="text" id="txtObservaciones" name="txtObservaciones" class="form-control" placeholder="Síntomas o comentarios">
+                        <label for="txtObservaciones" class="form-label label-morado">Observaciones</label>
+                        <input type="text" id="txtObservaciones" name="txtObservaciones" class="form-control form-control-purple" placeholder="Síntomas o comentarios">
                     </div>
-                    <div class="mb-3">
-                        <label for="txtPlan">Plan de tratamiento</label>
-                        <input type="text" id="txtPlan" name="txtPlan" class="form-control" placeholder="Recomendaciones y plan de tratamiento">
-                    </div>
-                    <button type="submit" class="btn btn-primary w-100">
+                    <button type="submit" class="btn btn-purple w-100">
                         <i class="bi bi-save"></i> Guardar Diagnóstico
                     </button>
                 </form>
@@ -213,7 +193,6 @@
     </div>
 </div>
 
-<!-- Scripts de Bootstrap -->
 <script>
     // Validación de formularios
     (function () {
@@ -242,5 +221,4 @@
         }
     }
 </script>
-
 {% endblock %}

@@ -1,6 +1,12 @@
 {% extends "./base.html" %}
+{% load static %}
 
 {% block title %} Edición de Diagnóstico {% endblock %}
+
+{% block head %}
+  {{ block.super }}
+  <link rel="stylesheet" href="{% static 'css/gestiones.css' %}">
+{% endblock %}
 
 {% block body %}
 <div class="container mt-4">
@@ -9,19 +15,75 @@
             <h2 class="text-center mb-4">Editar Diagnóstico</h2>
             <div class="card shadow">
                 <div class="card-body">
-                    <form id="editForm" action="/editarDiagnostico/" method="POST">{% csrf_token %}
+                    <form id="editForm" action="/editarDiagnostico/" method="POST" class="needs-validation" novalidate>
+                        {% csrf_token %}
                         <input type="hidden" name="txtId" value="{{ diagnostico.id_diagnostico }}">
 
                         <div class="mb-3">
-                            <label for="txtDiagnostico" class="form-label">Diagnóstico</label>
-                            <input type="text" id="txtDiagnostico" name="txtDiagnostico" 
-                                   class="form-control" value="{{ diagnostico.diagnostico }}" required>
+                            <label for="estudiante" class="form-label label-morado">Estudiante</label>
+                            <select id="estudiante" name="id_estudiante" class="form-select form-control-purple" required>
+                                <option value="" disabled>Seleccione un estudiante</option>
+                                {% for estudiante in estudiantes %}
+                                <option value="{{ estudiante.id_estudiante }}" {% if diagnostico.id_estudiante.id_estudiante == estudiante.id_estudiante %}selected{% endif %}>
+                                    {{ estudiante.nombres }} {{ estudiante.apellidos }}
+                                </option>
+                                {% endfor %}
+                            </select>
                         </div>
 
                         <div class="mb-3">
-                            <label for="txtNivel" class="form-label">Nivel</label>
-                            <input type="number" id="txtNivel" name="txtNivel" class="form-control" 
-                                   value="{{ diagnostico.nivel }}" min="1" max="10" required>
+                            <label for="txtTrastorno" class="form-label label-morado">Diagnóstico predeterminado</label>
+                            <select id="txtTrastorno" name="txtTrastorno" class="form-select form-control-purple">
+                                <option value="">Sin diagnóstico</option>
+                                {% for trastorno in trastornos %}
+                                    <option value="{{ trastorno.id_trastorno }}" {% if diagnostico.trastorno and diagnostico.trastorno.id_trastorno == trastorno.id_trastorno %}selected{% endif %}>
+                                        {{ trastorno.nombre }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="txtDiagnostico" class="form-label label-morado">Nombre del Diagnóstico</label>
+                            <input type="text" id="txtDiagnostico" name="txtDiagnostico" class="form-control form-control-purple" value="{{ diagnostico.diagnostico }}" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="txtNivel" class="form-label label-morado">Nivel de gravedad/urgencia</label>
+                            <select id="txtNivel" name="txtNivel" class="form-select form-control-purple" required>
+                                <option value="" disabled>Seleccione un nivel</option>
+                                <option value="Leve" {% if diagnostico.nivel == "Leve" %}selected{% endif %}>Leve</option>
+                                <option value="Moderado" {% if diagnostico.nivel == "Moderado" %}selected{% endif %}>Moderado</option>
+                                <option value="Grave" {% if diagnostico.nivel == "Grave" %}selected{% endif %}>Grave</option>
+                                <option value="Muy grave" {% if diagnostico.nivel == "Muy grave" %}selected{% endif %}>Muy grave</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="requiereInter" class="form-label label-morado fw-bold text-dark">¿Requiere intervención?</label>
+                            <select id="requiereInter" name="requiereInter" class="form-select form-control-purple" required onchange="toggleIntervencion()">
+                                <option value="No" {% if diagnostico.requiereInter == "No" %}selected{% endif %}>No</option>
+                                <option value="Sí" {% if diagnostico.requiereInter == "Sí" %}selected{% endif %}>Sí</option>
+                            </select>
+                        </div>
+
+                        <div id="intervencionFields" style="display: {% if diagnostico.requiereInter == 'Sí' %}block{% else %}none{% endif %};">
+                            <div class="mb-3">
+                                <label for="fechaInter" class="form-label label-morado fw-bold text-dark">Fecha de Intervención</label>
+                                <input type="datetime-local" id="fechaInter" name="fechaInter" class="form-control form-control-purple"
+                                    value="{{ diagnostico.fechaInter|date:'Y-m-d\\TH:i' }}">
+                            </div>
+                            <div class="mb-3">
+                                <label for="detalleInter" class="form-label label-morado fw-bold text-dark">Detalles de la Intervención</label>
+                                <input type="text" id="detalleInter" name="detalleInter" class="form-control form-control-purple"
+                                    value="{{ diagnostico.detalleInter }}">
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="txtObservaciones" class="form-label label-morado">Observaciones</label>
+                            <input type="text" id="txtObservaciones" name="txtObservaciones" class="form-control form-control-purple"
+                                value="{{ diagnostico.observaciones }}" placeholder="Síntomas o comentarios">
                         </div>
 
                         <div class="text-center mt-4">
@@ -54,4 +116,17 @@
     </div>
 </div>
 
+<script>
+function toggleIntervencion() {
+    let requiereInter = document.getElementById("requiereInter").value;
+    let intervencionFields = document.getElementById("intervencionFields");
+    if (requiereInter === "Sí") {
+        intervencionFields.style.display = "block";
+    } else {
+        intervencionFields.style.display = "none";
+        document.getElementById("fechaInter").value = "";
+        document.getElementById("detalleInter").value = "";
+    }
+}
+</script>
 {% endblock %}

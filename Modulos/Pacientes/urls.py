@@ -53,6 +53,7 @@ urlpatterns = [
     path("edicionHistoriaClinica/<int:id_historia>/", views.edicionHistoriaClinica),
     path("editarHistoriaClinica/", views.editarHistoriaClinica),
     path("eliminarHistoriaClinica/<int:id_historia>/", views.eliminarHistoriaClinica),
+    path('historia/pdf/<int:id_historia>/', views.generar_pdf_historia, name='generar_pdf_historia'),
 
 # Citas
     path("gestionCitas/", views.gestionCitas, name="gestionCitas"),
@@ -68,7 +69,7 @@ urlpatterns = [
 #Intervencion
     path("gestionIntervenciones/", views.gestionIntervenciones, name="gestionIntervenciones"),
     path("registrarIntervencion/", views.registrarIntervencion),
-    path("edicionIntervencion/<int:id_intervencion>/", views.edicionIntervencion),
+    path("edicionIntervencion/<int:id_intervencion>/", views.edicionIntervencion, name="edicionIntervencion"),
     path('editarIntervencion/<int:id_intervencion>/', views.editarIntervencion, name='editarIntervencion'),
     path("eliminarIntervencion/<int:id_intervencion>/", views.eliminarIntervencion),
 
@@ -83,5 +84,11 @@ urlpatterns = [
     path("edicionTrastorno/<int:id_trastorno>/", views.edicionTrastorno),
     path("editarTrastorno/<int:id_trastorno>/", views.editarTrastorno, name="editarTrastorno"),
     path("eliminarTrastorno/<int:id_trastorno>/", views.eliminarTrastorno),
+
+#--------------------
+    path('buscar/', views.busqueda_global, name='busquedaGlobal'),
+    path('api/historias_estudiante/', views.api_historias_estudiante, name='api_historias_estudiante'),
+    path('plantratamiento/nuevo/<int:id_diagnostico>/', views.crearPlanTratamiento, name='crearPlanTratamiento'),
+    path('plantratamiento/<int:id_plan>/', views.detallePlanTratamiento, name='detallePlanTratamiento'),
 
 ]

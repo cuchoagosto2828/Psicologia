@@ -3,8 +3,12 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.cache import never_cache
-from .models import Trastorno, Diagnostico, Estudiantes, HistoriaClinica, Cita, Intervencion, Observacion   
-
+from .models import Trastorno, Diagnostico, Estudiantes, HistoriaClinica, Cita, Intervencion, Observacion, PlanTratamiento, SeguimientoPlan   
+from django.db.models import Q
+from django.http import JsonResponse
+from django.http import HttpResponse
+from django.template.loader import get_template
+from xhtml2pdf import pisa
 
 def pagina_principal(request):
     return render(request, 'pagina_principal.html')
@@ -29,6 +33,23 @@ def logout_view(request):
     messages.success(request, "Sesión cerrada correctamente.")
     return redirect('login')
 
+def busqueda_global(request):
+    query = request.GET.get('q', '')
+
+    estudiantes = Estudiante.objects.filter(nombre__icontains=query) if query else []
+    citas = Cita.objects.filter(motivo__icontains=query) if query else []
+    historias = HistoriaClinica.objects.filter(observaciones__icontains=query) if query else []
+    intervenciones = Intervencion.objects.filter(descripcion__icontains=query) if query else []
+
+    contexto = {
+        'query': query,
+        'estudiantes': estudiantes,
+        'citas': citas,
+        'historias': historias,
+        'intervenciones': intervenciones,
+    }
+    return render(request, 'busqueda_resultados.html', contexto)
+    
 @never_cache
 @login_required
 def home(request):
@@ -171,6 +192,12 @@ def gestionDiagnostico(request):
     diagnosticos = Diagnostico.objects.all()
     estudiantes = Estudiantes.objects.all()
     trastornos = Trastorno.objects.all()
+    planes = PlanTratamiento.objects.all()
+    planes_dict = {plan.id_historia.id_diagnostico.id_diagnostico: plan for plan in planes}
+
+    for diagnostico in diagnosticos:
+        diagnostico.plan = planes_dict.get(diagnostico.id_diagnostico)
+
     return render(request, "gestionDiagnostico.html", {
         "diagnosticos": diagnosticos,
         "Estudiantes": estudiantes,  # Ahora se envían los estudiantes
@@ -190,7 +217,7 @@ def registrarDiagnostico(request):
         detalleInter = request.POST["detalleInter"]
         id_trastorno = request.POST.get("txtTrastorno", None)
         observaciones = request.POST["txtObservaciones"]
-        plan = request.POST["txtPlan"]
+
 
         estudiante = get_object_or_404(Estudiantes, id_estudiante=id_estudiante)
         trastorno = Trastorno.objects.get(id_trastorno=id_trastorno) if id_trastorno else None
@@ -205,10 +232,22 @@ def registrarDiagnostico(request):
         detalleInter=detalleInter,
         trastorno=trastorno,
         observaciones=observaciones,
-        plan=plan
     )
 
         nuevo_diagnostico.save()
+
+        # Si requiere intervención, crea la intervención
+        if requiereInter == "Sí" and fechaInter:
+            # Busca la historia clínica del estudiante
+            historia = HistoriaClinica.objects.filter(id_estudiante=id_estudiante).first()
+            if historia:
+                Intervencion.objects.create(
+                    id_historia=historia,
+                    tipo_intervencion="Intervención individual",  # O el tipo que desees
+                    fecha=fechaInter,
+                    motivoIn=f"Intervención generada por diagnóstico: {diagnostico.diagnostico}",
+                    detalles=detalleInter,
+                )
 
         return redirect("gestionDiagnostico")
 
@@ -232,6 +271,7 @@ def editarDiagnostico(request):
         id_diagnostico = request.POST["txtId"]
         id_estudiante = request.POST["id_estudiante"]
         id_trastorno = request.POST.get("id_trastorno")  # Si agregaste trastornos
+        fechaInter = request.POST.get("fechaInter")
         
         diagnostico = get_object_or_404(Diagnostico, pk=id_diagnostico)
         estudiante = get_object_or_404(Estudiantes, pk=id_estudiante)
@@ -239,11 +279,11 @@ def editarDiagnostico(request):
         diagnostico.diagnostico = request.POST["txtDiagnostico"]
         diagnostico.nivel = request.POST["txtNivel"]
         diagnostico.requiereInter = request.POST["requiereInter"]
-        diagnostico.fechaInter = request.POST["fechaInter"]
+        diagnostico.fechaInter = fechaInter if fechaInter else None
         diagnostico.detalleInter = request.POST["detalleInter"]
         diagnostico.id_estudiante = estudiante  # Asignar el estudiante
         diagnostico.observaciones = request.POST["txtObservaciones"]
-        diagnostico.plan = request.POST["txtPlan"]
+
         
         if id_trastorno:  # Si tienes trastornos en Diagnóstico
             trastorno = get_object_or_404(Trastorno, pk=id_trastorno)
@@ -264,6 +304,18 @@ def eliminarDiagnostico(request, id_diagnostico):
     return redirect("gestionDiagnostico")
 
 #----------
+
+@never_cache
+@login_required
+def historias_estudiante_api(request):
+    estudiante_id = request.GET.get('estudiante_id')
+    if not estudiante_id:
+        return JsonResponse({'historias': []})
+
+    historias = HistoriaClinica.objects.filter(id_estudiante__id=estudiante_id).values('id_historia', 'fecha_creacion')
+    historias_list = list(historias)
+    return JsonResponse({'historias': historias_list})
+
 
 @never_cache
 @login_required
@@ -467,11 +519,6 @@ def eliminar_observacion(request, id_observacion):
     return redirect('observaciones_cita', id_cita=id_cita)
 #generar pdf
 
-from django.http import HttpResponse
-from django.template.loader import get_template
-from xhtml2pdf import pisa
-
-
 def generar_pdf_observaciones(request, id_cita):
     cita = get_object_or_404(Cita, id_cita=id_cita)
     observaciones = Observacion.objects.filter(cita=cita).order_by('fecha_creacion')
@@ -495,25 +542,18 @@ def generar_pdf_observaciones(request, id_cita):
 @never_cache
 @login_required
 def gestionIntervenciones(request):
-    intervenciones = Intervencion.objects.all()
     estudiantes = Estudiantes.objects.all()
+    tipo_intervencion = Intervencion.TIPOS  # <-- usa todos los tipos del modelo
     historias_estudiante = []
-    form_error = False
-
-    if request.method == "POST" and 'estudiante_id' in request.POST:
-        historias_estudiante = HistoriaClinica.objects.filter(
-            id_estudiante_id=request.POST['estudiante_id']
-        )
-
-    if request.session.pop("form_error", False):
-        form_error = True
-
-    return render(request, "gestionIntervenciones.html", {
-        "intervenciones": intervenciones,
-        "estudiantes": estudiantes,
-        "historias_estudiante": historias_estudiante,
-        "tipo_intervencion": Intervencion.TIPOS,
-        "form_error": form_error,
+    estudiante_id = request.GET.get('estudiante_id')
+    if estudiante_id:
+        historias_estudiante = HistoriaClinica.objects.filter(id_estudiante=estudiante_id)
+    intervenciones = Intervencion.objects.all()
+    return render(request, 'gestionIntervenciones.html', {
+        'estudiantes': estudiantes,
+        'tipo_intervencion': tipo_intervencion,
+        'historias_estudiante': historias_estudiante,
+        'intervenciones': intervenciones,
     })
 
 @never_cache
@@ -550,9 +590,12 @@ def registrarIntervencion(request):
 def edicionIntervencion(request, id_intervencion):
     intervencion = get_object_or_404(Intervencion, id_intervencion=id_intervencion)
     historias = HistoriaClinica.objects.all()
-    return render(request, "edicionIntervencion.html", {
-        "intervencion": intervencion,
-        "historias": historias
+    tipo_intervencion = Intervencion.TIPOS  # <-- Esto es clave
+
+    return render(request, 'edicionIntervencion.html', {
+        'intervencion': intervencion,
+        'historias': historias,
+        'tipo_intervencion': tipo_intervencion,
     })
 
 @never_cache
@@ -662,3 +705,89 @@ def eliminarTrastorno(request, id_trastorno):
     trastorno.delete()
     messages.success(request, '¡Trastorno eliminado!')
     return redirect('/')
+
+@never_cache
+@login_required
+def generar_pdf_historia(request, id_historia):
+    historia = get_object_or_404(HistoriaClinica, id_historia=id_historia)
+    template = get_template('historia_clinica_pdf.html')
+    html = template.render({'historia': historia})
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="historia_{historia.id_historia}.pdf"'
+    pisa_status = pisa.CreatePDF(html, dest=response)
+    if pisa_status.err:
+        return HttpResponse('Error al generar el PDF', status=500)
+    return response
+
+@never_cache
+@login_required
+def historias_por_estudiante(request):
+    estudiante_id = request.GET.get('estudiante_id')
+    historias = []
+    if estudiante_id:
+        historias_qs = HistoriaClinica.objects.filter(id_estudiante__id=estudiante_id)
+        historias = [
+            {"id": h.id_historia, "texto": f"HC-{h.id_historia}"}
+            for h in historias_qs
+        ]
+    return JsonResponse({"historias": historias})
+
+@never_cache
+@login_required
+def api_historias_estudiante(request):
+    estudiante_id = request.GET.get('estudiante_id')
+    historias = []
+    if estudiante_id:
+        historias_qs = HistoriaClinica.objects.filter(id_estudiante=estudiante_id)
+        historias = [
+            {
+                'id_historia': h.id_historia,
+                'fecha_creacion': h.fecha_creacion.isoformat(),
+            }
+            for h in historias_qs
+        ]
+    return JsonResponse({'historias': historias})
+
+@never_cache
+@login_required
+def crearPlanTratamiento(request, id_diagnostico):
+    diagnostico = get_object_or_404(Diagnostico, pk=id_diagnostico)
+    historia = HistoriaClinica.objects.filter(id_diagnostico=diagnostico).first()
+    if request.method == "POST":
+        objetivo = request.POST.get("objetivo")
+        detalles = request.POST.get("detalles")
+        fecha_inicio = request.POST.get("fecha_inicio")
+        fecha_revision = request.POST.get("fecha_revision")
+        frecuencia = request.POST.get("frecuencia")
+        PlanTratamiento.objects.create(
+            id_historia=historia,
+            objetivo=objetivo,
+            detalles=detalles,
+            fecha_inicio=fecha_inicio,
+            fecha_revision=fecha_revision,
+            frecuencia=frecuencia
+        )
+        messages.success(request, "Plan de tratamiento creado correctamente.")
+        return redirect("gestionDiagnostico")
+    return render(request, "crearPlanTratamiento.html", {
+        "diagnostico": diagnostico,
+        "historia": historia
+    })
+
+@never_cache
+@login_required
+def detallePlanTratamiento(request, id_plan):
+    plan = get_object_or_404(PlanTratamiento, pk=id_plan)
+    seguimientos = plan.seguimientos.order_by('-fecha') if hasattr(plan, 'seguimientos') else []
+    if request.method == "POST":
+        avance = request.POST.get("avance")
+        observaciones = request.POST.get("observaciones")
+        if avance:
+            SeguimientoPlan.objects.create(plan=plan, avance=avance, observaciones=observaciones)
+            messages.success(request, "Seguimiento agregado.")
+            return redirect('detallePlanTratamiento', id_plan=id_plan)
+    return render(request, "detallePlanTratamiento.html", {
+        "plan": plan,
+        "seguimientos": seguimientos
+    })
+

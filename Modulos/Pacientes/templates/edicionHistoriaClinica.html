@@ -1,25 +1,27 @@
 {% extends "./base.html" %}
+{% load static %} 
 
 {% block title %} Edición de Historia Clínica {% endblock %}
+
+{% block head %}
+  {{ block.super }}
+  <link rel="stylesheet" href="{% static 'css/gestiones.css' %}">
+{% endblock %}
 
 {% block body %}
 <div class="container mt-4">
     <div class="row justify-content-center">
-        <div class="col-lg-6">
+        <div class="col-lg-8">
             <h2 class="text-center mb-4">Editar Historia Clínica</h2>
             <div class="card shadow">
                 <div class="card-body">
-                    <form id="editForm" action="/editarHistoriaClinica/" method="POST">
+                    <form id="editForm" action="/editarHistoriaClinica/" method="POST" class="needs-validation" novalidate>
                         {% csrf_token %}
+                        <input type="hidden" name="id_historia" value="{{ historia.id_historia }}">
 
                         <div class="mb-3">
-                            <label for="txtId" class="form-label">ID de la Historia Clínica</label>
-                            <input type="hidden" name="id_historia" value="{{ historia.id_historia }}">
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="txtIdEstudiante" class="form-label">Estudiante</label>
-                            <select id="id_estudiante" name="id_estudiante" class="form-select" required>
+                            <label for="id_estudiante" class="form-label label-morado">Estudiante</label>
+                            <select id="id_estudiante" name="id_estudiante" class="form-select form-control-purple" required>
                                 {% for estudiante in estudiantes %}
                                     <option value="{{ estudiante.id_estudiante }}" {% if historia.id_estudiante.id_estudiante == estudiante.id_estudiante %}selected{% endif %}>
                                         {{ estudiante.nombres }} {{ estudiante.apellidos }}
@@ -29,8 +31,29 @@
                         </div>
 
                         <div class="mb-3">
-                            <label for="txtIdDiagnostico" class="form-label">Diagnóstico</label>
-                            <select id="txtIdDiagnostico" name="txtIdDiagnostico" class="form-select" required>
+                            <label for="estado_actual" class="form-label label-morado">Estado emocional actual</label>
+                            <input type="text" id="estado_actual" name="estado_actual" class="form-control form-control-purple" value="{{ historia.estado_actual }}" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="motivo_consulta" class="form-label label-morado">Motivo de consulta</label>
+                            <textarea id="motivo_consulta" name="motivo_consulta" class="form-control form-control-purple" rows="3" required>{{ historia.motivo_consulta }}</textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="observaciones" class="form-label label-morado">Observaciones</label>
+                            <textarea id="observaciones" name="observaciones" class="form-control form-control-purple" rows="3">{{ historia.observaciones }}</textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="fecha_creacion" class="form-label label-morado">Fecha y hora de atención</label>
+                            <input type="datetime-local" id="fecha_creacion" name="fecha_creacion" class="form-control form-control-purple"
+                                   value="{{ historia.fecha_creacion|date:'Y-m-d\\TH:i' }}" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="id_diagnostico" class="form-label label-morado">Diagnóstico</label>
+                            <select id="id_diagnostico" name="id_diagnostico" class="form-select form-control-purple" required>
                                 {% for diagnostico in diagnosticos %}
                                     <option value="{{ diagnostico.id_diagnostico }}" {% if historia.id_diagnostico.id_diagnostico == diagnostico.id_diagnostico %}selected{% endif %}>
                                         {{ diagnostico.diagnostico }}
@@ -40,22 +63,19 @@
                         </div>
 
                         <div class="mb-3">
-                            <label for="txtObservaciones" class="form-label">Observaciones</label>
-                            <textarea id="txtObservaciones" name="txtObservaciones" class="form-control" rows="3" required>{{ historia.observaciones }}</textarea>
+                            <label for="PIAR" class="form-label label-morado">PIAR (Opcional)</label>
+                            <textarea id="PIAR" name="PIAR" class="form-control form-control-purple" rows="2">{{ historia.PIAR }}</textarea>
                         </div>
 
                         <div class="mb-3">
-                            <label for="txtPIAR" class="form-label">PIAR (Opcional)</label>
-                            <textarea id="txtPIAR" name="txtPIAR" class="form-control" rows="2">{{ historia.PIAR }}</textarea>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="txtDetallesPIAR" class="form-label">Detalles PIAR</label>
-                            <textarea id="txtDetallesPIAR" name="txtDetallesPIAR" class="form-control" rows="3" required>{{ historia.detalles_PIAR }}</textarea>
+                            <label for="detalles_PIAR" class="form-label label-morado">Detalles PIAR</label>
+                            <textarea id="detalles_PIAR" name="detalles_PIAR" class="form-control form-control-purple" rows="3">{{ historia.detalles_PIAR }}</textarea>
                         </div>
 
                         <div class="text-center mt-4">
-                            <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#confirmModal">Guardar Cambios</button>
+                            <button type="button" class="btn btn-purple" data-bs-toggle="modal" data-bs-target="#confirmModal">
+                                <i class="bi bi-save"></i> Guardar Cambios
+                            </button>
                             <a href="{% url 'gestionHistoriaClinica' %}" class="btn btn-secondary">Cancelar</a>
                         </div>
                     </form>
@@ -69,19 +89,20 @@
 <div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="confirmModalLabel">Confirmar Edición</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            <div class="modal-header card-header-gradient">
+                <h5 class="modal-title text-white" id="confirmModalLabel">Confirmar Edición</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
             </div>
             <div class="modal-body">
                 ¿Estás seguro de que quieres guardar los cambios de esta historia clínica?
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="submit" class="btn btn-success" onclick="document.getElementById('editForm').submit();">Sí, Guardar</button>
+                <button type="button" class="btn btn-purple-light" data-bs-dismiss="modal">Cancelar</button>
+                <button type="submit" class="btn btn-purple" onclick="document.getElementById('editForm').submit();">
+                    <i class="bi bi-save"></i> Sí, Guardar
+                </button>
             </div>
         </div>
     </div>
 </div>
-
 {% endblock %}

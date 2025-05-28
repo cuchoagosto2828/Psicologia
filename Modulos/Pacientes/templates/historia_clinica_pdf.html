@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Historia Clínica #{{ historia.id_historia }}</title>
+    <style>
+        body { font-family: Arial, sans-serif; font-size: 12px; }
+        h2 { color: #6a1b9a; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { border: 1px solid #bbb; padding: 6px; }
+    </style>
+</head>
+<body>
+    <h2>Historia Clínica #{{ historia.id_historia }}</h2>
+    <p><strong>Estudiante:</strong> {{ historia.id_estudiante.nombres }} {{ historia.id_estudiante.apellidos }}</p>
+    <p><strong>Fecha:</strong> {{ historia.fecha_creacion|date:"d/m/Y H:i" }}</p>
+    <p><strong>Motivo de consulta:</strong> {{ historia.motivo_consulta }}</p>
+    <p><strong>Estado actual:</strong> {{ historia.estado_actual }}</p>
+    <p><strong>Diagnóstico:</strong> {{ historia.id_diagnostico.diagnostico }}</p>
+    <p><strong>Observaciones:</strong> {{ historia.observaciones }}</p>
+    <p><strong>PIAR:</strong> {{ historia.PIAR }}</p>
+    <p><strong>Detalles PIAR:</strong> {{ historia.detalles_PIAR }}</p>
+</body>
+</html>

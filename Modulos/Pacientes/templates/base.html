@@ -1,117 +1,80 @@
+{% load static %}   
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Estudiantes{% endblock %}</title>
-    <link rel="icon" type="image/png" href="{{ STATIC_URL }}../../../../../static/psicologia.png">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="icon" type="image/png" href="{% static 'psicologia.png' %}">
+    
+    <!-- Estilos globales -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="...">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.12.1/font/bootstrap-icons.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/gestiones.css' %}">
 
-  </head>
+    {% block head %}{% endblock %}
+</head>
+
 
 <body>
-<style>
-.modo-oscuro {
-    background-color: #121212;
-    color: white;
-}
+  
+    <nav class="navbar navbar-expand-lg navbar-dark card-header-gradient mb-4">
+      <div class="container-fluid">
+        <a class="navbar-brand fw-bold" href="{% url 'gestionEstudiantes' %}">
+          <i class="bi bi-mortarboard-fill"></i> Psicología Escolar
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNavDropdown">
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <li class="nav-item">
+              <a class="nav-link {% if request.resolver_match.url_name == 'gestionEstudiantes' %}active{% endif %}" href="{% url 'gestionEstudiantes' %}">
+                <i class="bi bi-person-lines-fill"></i> Estudiantes
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link {% if request.resolver_match.url_name == 'gestionDiagnostico' %}active{% endif %}" href="{% url 'gestionDiagnostico' %}">
+                <i class="bi bi-clipboard-plus"></i> Diagnóstico
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link {% if request.resolver_match.url_name == 'gestionHistoriaClinica' %}active{% endif %}" href="{% url 'gestionHistoriaClinica' %}">
+                <i class="bi bi-file-medical-fill"></i> Historia Clínica
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link {% if request.resolver_match.url_name == 'gestionCitas' %}active{% endif %}" href="{% url 'gestionCitas' %}">
+                <i class="bi bi-calendar-check"></i> Citas
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link {% if request.resolver_match.url_name == 'gestionIntervenciones' %}active{% endif %}" href="{% url 'gestionIntervenciones' %}">
+                <i class="bi bi-file-earmark-medical-fill"></i> Intervenciones
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link {% if request.resolver_match.url_name == 'gestionTrastornos' %}active{% endif %}" href="{% url 'gestionTrastornos' %}">
+                <i class="bi bi-clipboard-data"></i> Diagnósticos predeterminados
+              </a>
+            </li>
+          </ul>
+          <ul class="navbar-nav mb-2 mb-lg-0">
+            <li class="nav-item me-2">
+              <button id="modo-toggle" class="btn btn-outline-light">
+                <i id="icono-modo" class="bi bi-moon"></i> Modo oscuro
+              </button>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-white" href="{% url 'logout' %}">
+                <i class="bi bi-box-arrow-right"></i> Cerrar sesión
+              </a>
+            </li>
+          </ul>
 
-/* Estilos para tarjetas en modo oscuro */
-.modo-oscuro .card {
-    background-color: #1e1e1e;
-    color: white;
-    border-color: #333;
-}
-
-/* Botón en modo oscuro */
-.modo-oscuro .btn-outline-light {
-    border-color: white;
-    color: white;
-}
-
-/* Asegurar que los botones siempre sean visibles */
-.modo-oscuro .btn {
-    border-color: white;
-}
-
-/* Ajustar botones secundarios en modo oscuro */
-.modo-oscuro .btn-outline-secondary {
-    color: white;
-    border-color: white;
-}
-
-/* Estilos para tablas en modo oscuro */
-.modo-oscuro .table {
-    background-color: #1e1e1e;
-    color: white;
-}
-
-/* Encabezados de tabla en modo oscuro */
-.modo-oscuro .table thead {
-    background-color: #333;
-    color: white;
-}
-
-/* Estilos para resaltar filas alternas en tabla */
-.modo-oscuro .table tbody tr:nth-child(even) {
-    background-color: #252525;
-}
-
-/* Bordes de tabla en modo oscuro */
-.modo-oscuro .table th, 
-.modo-oscuro .table td {
-    border-color: #444;
-}
-
-
-.modo-oscuro a:hover {
-    color: #00BFFF;
-}
-btn-notes{
-  background-color: yellow;
-}
-
-
-  </style>
-    <nav class="navbar navbar-expand-lg bg-body-tertiary">
-        <div class="container-fluid">
-          <a class="navbar-brand" href="#">Menú</a>
-          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-          </button>
-          <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-              <li class="nav-item">
-                <a class="nav-link active" aria-current="page" href="{% url 'gestionEstudiantes' %}">Estudiantes</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="{% url 'gestionDiagnostico' %}">Diagnostico</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="{% url 'gestionHistoriaClinica' %}">Historia Clínica</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="{% url 'gestionCitas' %} ">Citas</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="{% url 'gestionIntervenciones' %}">Intervenciones</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="{% url 'gestionTrastornos' %}">Diagnósticos predeterminados</a>
-              </li>
-              <li>
-                <button id="modo-toggle" class="btn btn-outline-secondary">
-                  <i id="icono-modo" class="bi bi-moon"></i> Modo oscuro
-                </button>              
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="{% url 'logout' %}">Cerrar sesión</a>
-              </li>
-              
-            </ul>
-          </div>
         </div>
+      </div>
     </nav>
 
     <main>
@@ -143,7 +106,7 @@ btn-notes{
           function activarModoOscuro() {
               body.classList.add("modo-oscuro");
               icono.classList.replace("bi-moon", "bi-sun");
-              boton.textContent = " Modo claro";
+              boton.innerHTML = '<i id="icono-modo" class="bi bi-sun"></i> Modo claro';
               boton.classList.remove("btn-outline-dark");
               boton.classList.add("btn-outline-light");
               localStorage.setItem("modo", "oscuro");
@@ -152,7 +115,7 @@ btn-notes{
           function desactivarModoOscuro() {
               body.classList.remove("modo-oscuro");
               icono.classList.replace("bi-sun", "bi-moon");
-              boton.textContent = " Modo oscuro";
+              boton.innerHTML = '<i id="icono-modo" class="bi bi-moon"></i> Modo oscuro';
               boton.classList.remove("btn-outline-light");
               boton.classList.add("btn-outline-dark");
               localStorage.setItem("modo", "claro");

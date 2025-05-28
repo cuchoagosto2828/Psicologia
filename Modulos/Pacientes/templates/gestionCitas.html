@@ -1,169 +1,175 @@
-    {% extends "./base.html" %}
+{% extends "base.html" %}
+{% load static %}
 
-    {% block title %} Gestión de Citas {% endblock %}
+{% block title %}Gestión de Citas{% endblock %}
 
-    {% block body %}
-    <div class="container mt-4">
-        <div class="row">
-            <!-- Mensajes de éxito -->
-            {% if messages %}
-                <div class="col-12">
-                    {% for message in messages %}
-                    <div class="alert alert-success alert-dismissible fade show d-flex align-items-center" role="alert">
-                        <i class="bi bi-check-circle-fill me-2"></i>
-                        <strong>{{ message }}</strong>
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                    {% endfor %}
-                </div>
-            {% endif %}
+{% block head %}
+  {{ block.super }}
+  <link rel="stylesheet" href="{% static 'css/gestiones.css' %}">
+{% endblock %}
 
-            <!-- Encabezado y Botón de Nueva Cita -->
-            <div class="col-12 d-flex justify-content-between align-items-center mb-3">
-                <h2 class="text-primary"><i class="bi bi-calendar-check"></i> Gestión de Citas</h2>
-                <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modalRegistro">
-                    <i class="bi bi-plus-circle"></i> Nueva Cita
-                </button>
-            </div>
-
-            <!-- Tabla de Citas -->
+{% block body %}
+<div class="container mt-4">
+    <div class="row">
+        <!-- Mensajes de éxito -->
+        {% if messages %}
             <div class="col-12">
-                <div class="card shadow-sm">
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="table table-hover">
-                                <thead class="table-dark">
-                                    <tr>
-                                        <th>#</th>
-                                        <th>Estudiante</th>
-                                        <th>Fecha de Inicio</th>
-                                        <th>Motivo</th>
-                                        <th>Opciones</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for cita in citas %}
-                                    <tr>
-                                        <td>{{ forloop.counter }}</td>
-                                        <td>{{ cita.id_estudiante.nombres }} {{ cita.id_estudiante.apellidos }}</td>
-                                        <td>{{ cita.fecha }}</td>
-                                        <td>{{ cita.motivo }}</td>
-                                        <td>
-                                            <a href="/edicionCita/{{ cita.id_cita }}" class="btn btn-info">
-                                                <i class="fas fa-edit"></i> Editar
-                                            </a>
-                                            <button class="btn btn-danger btnEliminacion" data-bs-toggle="modal" data-bs-target="#modalEliminar{{ cita.id_cita }}">
-                                                <i class="fas fa-trash-alt"></i> Eliminar
-                                            </button>
-                                              <a href="{% url 'observaciones_cita' cita.id_cita %}" class="btn btn-secondary">
-                                                <i class="fas fa-notes-medical"></i> Observaciones
-                                             </a>
-                                             <a href="{% url 'generar_pdf_observaciones' cita.id_cita %}" class="btn btn-outline-primary" target="_blank">
-                                                <i class="fas fa-file-pdf"></i> PDF
-                                            </a>
-                                        </td>
-                                    </tr>
-                                
-                                    <!-- Modal de Confirmación para Eliminar -->
-                                    <div class="modal fade" id="modalEliminar{{ cita.id_cita }}" tabindex="-1" aria-labelledby="modalEliminarLabel{{ cita.id_cita }}" aria-hidden="true">
-                                        <div class="modal-dialog">
-                                            <div class="modal-content">
-                                                <div class="modal-header bg-danger text-white">
-                                                    <h5 class="modal-title" id="modalEliminarLabel{{ cita.id_cita }}">
-                                                        <i class="fas fa-exclamation-triangle"></i> Confirmar Eliminación
-                                                    </h5>
-                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-                                                </div>
-                                                <div class="modal-body">
-                                                    ¿Estás seguro de que quieres eliminar la cita programada para <strong>{{ cita.fecha }}</strong>? Esta acción no se puede deshacer.
-                                                </div>
-                                                <div class="modal-footer">
-                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                                                    <a href="/eliminarCitas/{{ cita.id_cita }}" class="btn btn-danger">
-                                                        <i class="fas fa-trash-alt"></i> Sí, Eliminar
-                                                    </a>
-                                                </div>
+                {% for message in messages %}
+                <div class="alert alert-success alert-dismissible fade show d-flex align-items-center" role="alert" style="background-color: #e6d9f2; color: #4a235a; border-color: #9b59b6;">
+                    <i class="bi bi-check-circle-fill me-2"></i>
+                    <strong>{{ message }}</strong>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <!-- Encabezado y Botón de Nueva Cita -->
+        <div class="col-12 mb-4">
+            <div class="card shadow-sm card-purple-border">
+                <div class="card-body card-header-gradient">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h2 class="text-white m-0"><i class="bi bi-calendar-check me-2"></i> Gestión de Citas</h2>
+                        <button class="btn btn-white-purple" data-bs-toggle="modal" data-bs-target="#modalRegistro">
+                            <i class="bi bi-plus-circle"></i> Nueva Cita
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabla de Citas -->
+        <div class="col-12">
+            <div class="card shadow-sm card-light-purple-border">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="btn-purple">
+                                <tr>
+                                    <th>#</th>
+                                    <th>Estudiante</th>
+                                    <th>Fecha de Inicio</th>
+                                    <th>Motivo</th>
+                                    <th>Opciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for cita in citas %}
+                                <tr>
+                                    <td>{{ forloop.counter }}</td>
+                                    <td>{{ cita.id_estudiante.nombres }} {{ cita.id_estudiante.apellidos }}</td>
+                                    <td>{{ cita.fecha }}</td>
+                                    <td>{{ cita.motivo }}</td>
+                                    <td>
+                                        <a href="/edicionCita/{{ cita.id_cita }}" class="btn btn-sm btn-purple">
+                                            <i class="bi bi-pencil-square"></i> Editar
+                                        </a>
+                                        <button class="btn btn-sm btn-danger-pink btnEliminacion" data-bs-toggle="modal" data-bs-target="#modalEliminar{{ cita.id_cita }}">
+                                            <i class="bi bi-trash3-fill"></i> Eliminar
+                                        </button>
+                                        <a href="{% url 'observaciones_cita' cita.id_cita %}" class="btn btn-sm btn-purple-light">
+                                            <i class="bi bi-journal-text"></i> Observaciones
+                                        </a>
+                                        <a href="{% url 'generar_pdf_observaciones' cita.id_cita %}" class="btn btn-sm btn-white-purple" target="_blank">
+                                            <i class="bi bi-file-earmark-pdf"></i> PDF
+                                        </a>
+                                    </td>
+                                </tr>
+                            
+                                <!-- Modal de Confirmación para Eliminar -->
+                                <div class="modal fade" id="modalEliminar{{ cita.id_cita }}" tabindex="-1" aria-labelledby="modalEliminarLabel{{ cita.id_cita }}" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content modal-content-rounded-small">
+                                            <div class="modal-header btn-purple-dark">
+                                                <h5 class="modal-title" id="modalEliminarLabel{{ cita.id_cita }}">
+                                                    <i class="bi bi-exclamation-triangle-fill me-2"></i> Confirmar Eliminación
+                                                </h5>
+                                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                ¿Estás seguro de que quieres eliminar la cita programada para <strong>{{ cita.fecha }}</strong>? Esta acción no se puede deshacer.
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-purple-light" data-bs-dismiss="modal">Cancelar</button>
+                                                <a href="/eliminarCitas/{{ cita.id_cita }}" class="btn btn-danger-pink">
+                                                    <i class="bi bi-trash3-fill"></i> Sí, Eliminar
+                                                </a>
                                             </div>
                                         </div>
                                     </div>
-                                    {% endfor %}
-                                </tbody>
-                                
-                            </table>
-                        </div>
+                                </div>
+                                {% endfor %}
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+</div>
 
-    <!-- Modal de Registro de Cita -->
-    <div class="modal fade" id="modalRegistro" tabindex="-1" aria-labelledby="modalRegistroLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header bg-primary text-white">
-                    <h5 class="modal-title" id="modalRegistroLabel"><i class="bi bi-calendar-plus"></i> Nueva Cita</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form action="/registrarCita/" method="POST" class="needs-validation" novalidate>
-                        {% csrf_token %}
-                        <div class="mb-3">
-                            <label class="form-label">Estudiante</label>
-                            <select name="id_estudiante" class="form-select" required>
-                                <option value="" {% if not request.GET.id_estudiante %}selected{% endif %}>Seleccione un estudiante</option>
-                                {% for estudiante in estudiantes %}
-                                    <option value="{{ estudiante.id_estudiante }}" 
-                                        {% if request.GET.id_estudiante == estudiante.id_estudiante|stringformat:"s" %}selected{% endif %}>
-                                        {{ estudiante.nombres }} {{ estudiante.apellidos }}
-                                    </option>
-                                {% endfor %}
-                            </select>
-                                   
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Fecha</label>
-                            <input type="datetime-local" name="fecha" class="form-control" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Motivo de la cita</label>
-                            <textarea name="motivo" class="form-control" placeholder="Motivo de la cita" required></textarea>
-                        </div>
-                        <button type="submit" class="btn btn-primary w-100">
-                            <i class="bi bi-save"></i> Guardar Cita
-                        </button>
-                    </form>
-
-                    
-                </div>
+<!-- Modal de Registro de Cita -->
+<div class="modal fade" id="modalRegistro" tabindex="-1" aria-labelledby="modalRegistroLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content modal-content-rounded">
+            <div class="modal-header card-header-gradient">
+                <h5 class="modal-title" id="modalRegistroLabel"><i class="bi bi-calendar-plus"></i> Nueva Cita</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" style="background-color: #f9f5fd;">
+                <form action="/registrarCita/" method="POST" class="needs-validation" novalidate>
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label class="form-label label-morado">Estudiante</label>
+                        <select name="id_estudiante" class="form-select form-control-purple" required>
+                            <option value="" {% if not request.GET.id_estudiante %}selected{% endif %}>Seleccione un estudiante</option>
+                            {% for estudiante in estudiantes %}
+                                <option value="{{ estudiante.id_estudiante }}" 
+                                    {% if request.GET.id_estudiante == estudiante.id_estudiante|stringformat:"s" %}selected{% endif %}>
+                                    {{ estudiante.nombres }} {{ estudiante.apellidos }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label label-morado">Fecha</label>
+                        <input type="datetime-local" name="fecha" class="form-control form-control-purple" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label label-morado">Motivo de la cita</label>
+                        <textarea name="motivo" class="form-control form-control-purple" placeholder="Motivo de la cita" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-purple w-100">
+                        <i class="bi bi-save"></i> Guardar Cita
+                    </button>
+                </form>
             </div>
         </div>
     </div>
+</div>
 
-    <!-- Scripts de Bootstrap -->
-    <script>
-        // Validación de formularios
-        (function () {
-            'use strict'
-            var forms = document.querySelectorAll('.needs-validation')
-            Array.prototype.slice.call(forms).forEach(function (form) {
-                form.addEventListener('submit', function (event) {
-                    if (!form.checkValidity()) {
-                        event.preventDefault()
-                        event.stopPropagation()
-                    }
-                    form.classList.add('was-validated')
-                }, false)
-            })
-        })();
+<script>
+    // Validación de formularios
+    (function () {
+        'use strict'
+        var forms = document.querySelectorAll('.needs-validation')
+        Array.prototype.slice.call(forms).forEach(function (form) {
+            form.addEventListener('submit', function (event) {
+                if (!form.checkValidity()) {
+                    event.preventDefault()
+                    event.stopPropagation()
+                }
+                form.classList.add('was-validated')
+            }, false)
+        })
+    })();
 
-        document.addEventListener("DOMContentLoaded", function () {
-            const urlParams = new URLSearchParams(window.location.search);
-            if (urlParams.has("abrir_modal")) {
-                var modal = new bootstrap.Modal(document.getElementById("modalRegistro"));
-                modal.show();
-            }
-        });
-    </script>
-
-    {% endblock %}
+    document.addEventListener("DOMContentLoaded", function () {
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has("abrir_modal")) {
+            var modal = new bootstrap.Modal(document.getElementById("modalRegistro"));
+            modal.show();
+        }
+    });
+</script>
+{% endblock %}

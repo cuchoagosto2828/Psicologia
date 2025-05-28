@@ -1,48 +1,62 @@
 {% extends "./base.html" %}
+{% load static %}
 
 {% block title %} Editar Intervención {% endblock %}
+
+{% block head %}
+  {{ block.super }}
+  <link rel="stylesheet" href="{% static 'css/gestiones.css' %}">
+{% endblock %}
 
 {% block body %}
 <div class="container mt-4">
     <div class="row justify-content-center">
-        <div class="col-lg-6">
+        <div class="col-lg-7">
             <h2 class="text-center mb-4">Editar Intervención</h2>
-            <div class="card shadow">
+            <div class="card shadow-sm card-light-purple-border">
                 <div class="card-body">
-                    <form action="/editarIntervencion/{{ intervencion.id_intervencion }}/" method="POST">
+                    <form action="/editarIntervencion/{{ intervencion.id_intervencion }}/" method="POST" class="needs-validation" novalidate>
                         {% csrf_token %}
                         <input type="hidden" name="id_intervencion" value="{{ intervencion.id_intervencion }}">
 
                         <div class="mb-3">
-                            <label for="id_historia" class="form-label">Historia Clínica</label>
-                            <select id="id_historia" name="id_historia" class="form-select" required>
+                            <label for="id_historia" class="form-label label-morado">Historia Clínica</label>
+                            <select id="id_historia" name="id_historia" class="form-select form-control-purple" required>
                                 {% for historia in historias %}
                                     <option value="{{ historia.id_historia }}" {% if historia.id_historia == intervencion.id_historia.id_historia %}selected{% endif %}>
-                                        {{ historia.id_historia }} - {{ historia.id_estudiante.nombres }} {{ historia.id_estudiante.apellidos }}
+                                        HC-{{ historia.id_historia }} - {{ historia.id_estudiante.nombres }} {{ historia.id_estudiante.apellidos }}
                                     </option>
                                 {% endfor %}
                             </select>
                         </div>
 
                         <div class="mb-3">
-                            <label for="tipo_intervencion" class="form-label">Tipo de Intervención</label>
-                            <input type="text" id="tipo_intervencion" name="tipo_intervencion" class="form-control" value="{{ intervencion.tipo_intervencion }}" required>
+                            <label for="tipo_intervencion" class="form-label label-morado">Tipo de intervención</label>
+                            <select id="tipo_intervencion" name="tipo_intervencion" class="form-select form-control-purple" required>
+                                {% for codigo, nombre in tipo_intervencion %}
+                                <option value="{{ codigo }}" {% if intervencion.tipo_intervencion == codigo %}selected{% endif %}>{{ nombre }}</option>
+                                {% endfor %}
+                            </select>
                         </div>
 
                         <div class="mb-3">
-                            <label for="fecha" class="form-label">Fecha</label>
-                            <input type="datetime-local" id="fecha" name="fecha" class="form-control" value="{{ intervencion.fecha|date:'Y-m-d\TH:i' }}" required>
+                            <label for="fecha" class="form-label label-morado">Fecha</label>
+                            <input type="datetime-local" id="fecha" name="fecha" class="form-control form-control-purple" value="{{ intervencion.fecha|date:'Y-m-d\\TH:i' }}" required>
                         </div>
 
                         <div class="mb-3">
-                            <label for="detalles" class="form-label">Detalles de la Intervención</label>
-                            <textarea id="detalles" name="detalles" class="form-control" rows="3" required>{{ intervencion.detalles }}</textarea>
+                            <label for="motivoIn" class="form-label label-morado">Motivo de la intervención</label>
+                            <textarea id="motivoIn" name="motivoIn" class="form-control form-control-purple" required>{{ intervencion.motivoIn }}</textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="detalles" class="form-label label-morado">Detalles de la intervención</label>
+                            <textarea id="detalles" name="detalles" class="form-control form-control-purple">{{ intervencion.detalles }}</textarea>
                         </div>
 
                         <div class="text-center mt-4">
-                            <button type="submit" class="btn btn-success">Guardar cambios</button>
-                            <a href="{% url 'gestionIntervenciones' %}" class="btn btn-secondary">Cancelar</a>
-
+                            <button type="submit" class="btn btn-purple w-50"><i class="bi bi-save"></i> Guardar cambios</button>
+                            <a href="{% url 'gestionIntervenciones' %}" class="btn btn-secondary ms-2">Cancelar</a>
                         </div>
                     </form>
                 </div>
@@ -50,24 +64,4 @@
         </div>
     </div>
 </div>
-
-<!-- Modal de Confirmación -->
-<div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="confirmModalLabel">Confirmar Edición</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-            </div>
-            <div class="modal-body">
-                ¿Estás seguro de que quieres guardar los cambios de esta intervención?
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="submit" class="btn btn-success" onclick="document.querySelector('form').submit();">Sí, Guardar</button>
-            </div>
-        </div>
-    </div>
-</div>
-
 {% endblock %}
