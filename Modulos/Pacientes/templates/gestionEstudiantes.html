@@ -48,7 +48,10 @@
             <div class="card shadow-sm card-light-purple-border">
                 <div class="card-body">
                     <div class="table-responsive">
-                        <table class="table table-hover">
+                        <div class="mb-3">
+                            <input type="text" id="buscadorEstudiantes" class="form-control" placeholder="Buscar por nombre, apellido o documento" onkeyup="filtrarEstudiantes()">
+                        </div>
+                        <table class="table table-hover" id="tablaEstudiantes">
                             <thead class="btn-purple">
                                 <tr>
                                     <th>Código</th>
@@ -224,5 +227,23 @@
         </div>
     </div>
 </div>
+<script>
+function filtrarEstudiantes() {
+    const input = document.getElementById("buscadorEstudiantes");
+    const filtro = input.value.toLowerCase();
+    const tabla = document.getElementById("tablaEstudiantes");
+    const filas = tabla.getElementsByTagName("tr");
+
+    for (let i = 1; i < filas.length; i++) {
+        const documento = filas[i].cells[1]?.textContent.toLowerCase() || "";
+        const nombre = filas[i].cells[2]?.textContent.toLowerCase() || "";
+        const apellido = filas[i].cells[3]?.textContent.toLowerCase() || "";
+
+        const coincide = documento.includes(filtro) || nombre.includes(filtro) || apellido.includes(filtro);
+        filas[i].style.display = coincide ? "" : "none";
+    }
+}
+</script>
+
 
 {% endblock %}

@@ -91,4 +91,8 @@ urlpatterns = [
     path('plantratamiento/nuevo/<int:id_diagnostico>/', views.crearPlanTratamiento, name='crearPlanTratamiento'),
     path('plantratamiento/<int:id_plan>/', views.detallePlanTratamiento, name='detallePlanTratamiento'),
 
+#agendar
+path('agendar-cita/', views.agendar_cita_google, name='agendar_cita'),
+
+
 ]

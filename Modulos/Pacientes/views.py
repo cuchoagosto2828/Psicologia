@@ -791,3 +791,47 @@ def detallePlanTratamiento(request, id_plan):
         "seguimientos": seguimientos
     })
 
+from django.shortcuts import redirect
+from google_auth_oauthlib.flow import InstalledAppFlow
+from googleapiclient.discovery import build
+import datetime
+import os
+import pickle
+
+def agendar_cita_google(request):
+    SCOPES = ['https://www.googleapis.com/auth/calendar.events']
+    creds = None
+
+    # Intenta cargar credenciales almacenadas localmente
+    if os.path.exists('token.pickle'):
+        with open('token.pickle', 'rb') as token:
+            creds = pickle.load(token)
+
+    # Si no hay credenciales válidas, inicia el flujo de autenticación
+    if not creds or not creds.valid:
+        flow = InstalledAppFlow.from_client_secrets_file('client_secret.json', SCOPES)
+        creds = flow.run_local_server(port=0)
+
+        # Guarda las credenciales para la próxima vez
+        with open('token.pickle', 'wb') as token:
+            pickle.dump(creds, token)
+
+    service = build('calendar', 'v3', credentials=creds)
+
+    # Datos de la cita (puedes personalizarlos)
+    evento = {
+        'summary': 'Cita en Psicología COSFA',
+        'description': 'Acompañamiento emocional',
+        'start': {
+            'dateTime': '2025-06-01T10:00:00-05:00',
+            'timeZone': 'America/Bogota',
+        },
+        'end': {
+            'dateTime': '2025-06-01T11:00:00-05:00',
+            'timeZone': 'America/Bogota',
+        },
+    }
+
+    evento = service.events().insert(calendarId='primary', body=evento).execute()
+    return redirect(evento.get('htmlLink'))  # Te envía al enlace del evento creado
+
